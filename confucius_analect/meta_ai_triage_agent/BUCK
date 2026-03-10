@@ -1,0 +1,40 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+
+load("@fbcode_macros//build_defs:python_library.bzl", "python_library")
+
+python_library(
+    name = "meta_ai_triage_agent",
+    srcs = [
+        "__init__.py",
+        "entry.py",
+        "metadata.py",
+        "tasks.py",
+    ],
+    deps = [
+        # Core Confucius dependencies
+        "//confucius/analects/entry:entry",
+        "//confucius/analects/entry:entry_base",
+        "//confucius/analects/entry:mixin",
+        "//confucius/analects/entry:decorators",
+        "//confucius/analects/entry:tags",
+
+        # LLM and Orchestrator
+        "//confucius/llm:anthropic",
+        "//confucius/orchestrator:orchestrator",
+        "//confucius/orchestrator/extensions:code",
+        "//confucius/orchestrator/extensions:function",
+        "//confucius/orchestrator/extensions:plain_text",
+        "//confucius/orchestrator/extensions:system_info",
+        "//confucius/orchestrator/extensions:thinking",
+
+        # Task capabilities (READ & WRITE)
+        "//confucius/utils/orchestrator:task",
+
+        # Messaging capabilities
+        "//confucius/utils/orchestrator:message_user",
+
+        # URL resolution
+        "//confucius/utils/orchestrator:fburl",
+    ],
+    visibility = ["PUBLIC"],
+)

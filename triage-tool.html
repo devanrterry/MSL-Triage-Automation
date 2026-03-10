@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta AI Triage Tool</title>
+    <style>
+        :root {
+            --meta-blue: #0668E1;
+            --meta-blue-dark: #0553b8;
+            --bg-primary: #f5f6f7;
+            --bg-card: #ffffff;
+            --text-primary: #1c1e21;
+            --text-secondary: #65676b;
+            --border-color: #dddfe2;
+            --success-green: #31a24c;
+            --warning-orange: #f7b928;
+            --error-red: #e41e3f;
+            --priority-high: #e41e3f;
+            --priority-medium: #f7b928;
+            --priority-low: #31a24c;
+            --priority-wishlist: #65676b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--meta-blue), #0553b8);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(6, 104, 225, 0.3);
+        }
+
+        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 16px 18px;
+            font-size: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--meta-blue);
+            box-shadow: 0 0 0 3px rgba(6, 104, 225, 0.1);
+        }
+
+        .triage-button {
+            padding: 16px 32px;
+            font-size: 17px;
+            font-weight: 700;
+            background: var(--meta-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .triage-button:hover { background: var(--meta-blue-dark); }
+        .triage-button:active { transform: scale(0.98); }
+        .triage-button:disabled { background: #aaa; cursor: not-allowed; }
+
+        /* Status Messages */
+        .status-message {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.visible { display: block; }
+        .status-message.info { background: #e7f3ff; color: var(--meta-blue); }
+        .status-message.error { background: #fdeaea; color: var(--error-red); }
+        .status-message.success { background: #e6f7ed; color: var(--success-green); }
+
+        /* Output Section */
+        .output-section { display: none; }
+        .output-section.visible { display: block; }
+
+        /* Triage Card */
+        .triage-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .triage-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .triage-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .triage-task-id { font-size: 14px; color: var(--meta-blue); font-weight: 500; }
+
+        .priority-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high { background: var(--priority-high); color: white; }
+        .priority-medium { background: var(--priority-medium); color: var(--text-primary); }
+        .priority-low { background: var(--priority-low); color: white; }
+        .priority-wishlist { background: var(--priority-wishlist); color: white; }
+
+        .triage-body { padding: 24px; }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item { padding: 14px; background: var(--bg-primary); border-radius: 8px; }
+        .info-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-value { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+
+        /* Section styling */
+        .section { margin-bottom: 24px; }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title .copy-btn {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .section-title .copy-btn:hover { background: var(--meta-blue); color: white; border-color: var(--meta-blue); }
+        .section-title .copy-btn.copied { background: var(--success-green); color: white; border-color: var(--success-green); }
+
+        /* Tags Section */
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .tag {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #e6f7ed;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .tag:hover { background: var(--success-green); color: white; }
+
+        /* Title Section */
+        .title-display {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 14px;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Analysis Section */
+        .analysis-content {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* Comment Section */
+        .comment-box {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #d4d4d4;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Action Items */
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .action-item:last-child { border-bottom: none; }
+
+        .action-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--meta-blue);
+        }
+
+        .action-text { font-size: 14px; color: var(--text-primary); }
+        .action-value {
+            margin-left: auto;
+            font-weight: 600;
+            color: var(--meta-blue);
+            font-size: 13px;
+            max-width: 50%;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .auth-section summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .auth-content { padding-top: 16px; }
+
+        .auth-content input {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+
+        .auth-btn {
+            padding: 10px 20px;
+            background: var(--success-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-status {
+            display: inline-block;
+            margin-left: 12px;
+            font-size: 13px;
+        }
+
+        .auth-status.connected { color: var(--success-green); }
+        .auth-status.disconnected { color: var(--error-red); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-primary); }
+
+        @media (max-width: 768px) {
+            .input-group { flex-direction: column; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Meta AI Triage Tool</h1>
+            <p>Enter a Task ID to automatically fetch and triage the bug</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <h2 style="margin-bottom: 16px; font-size: 16px;">Paste Task Details</h2>
+            <p style="margin-bottom: 16px; font-size: 13px; color: var(--text-secondary);">
+                Open the task in your browser, then copy and paste the title and description below.
+            </p>
+
+            <div class="form-group">
+                <label for="taskInput">Task ID</label>
+                <input type="text" id="taskInput" placeholder="T258684950" style="padding: 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; width: 100%;" />
+            </div>
+
+            <div class="form-group" style="margin-top: 12px;">
+                <label for="taskTitle">Task Title</label>
+                <input type="text" id="taskTitle" placeholder="Paste the bug title here" style="padding: 12px; font-size: 15px; border: 2px solid var(--border-color); border-radius: 8px; width: 100%;" />
+            </div>
+
+            <div class="form-group" style="margin-top: 12px;">
+                <label for="taskDescription">Task Description (include debug info)</label>
+                <textarea id="taskDescription" placeholder="Paste the full bug description here, including any UserAgent, app version, or debug info..." style="padding: 12px; font-size: 14px; border: 2px solid var(--border-color); border-radius: 8px; width: 100%; min-height: 150px; resize: vertical; font-family: inherit;"></textarea>
+            </div>
+
+            <button class="triage-button" id="triageBtn" onclick="triageBug()" style="margin-top: 16px;">🔍 Triage Bug</button>
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-section" id="outputSection">
+            <div class="triage-card">
+                <div class="triage-header">
+                    <div>
+                        <div class="triage-task-id" id="displayTaskId">T000000000</div>
+                        <div class="triage-title" id="displayOriginalTitle">Original Title</div>
+                    </div>
+                    <span class="priority-badge priority-medium" id="priorityBadge">MEDIUM</span>
+                </div>
+
+                <div class="triage-body">
+                    <!-- Info Grid -->
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Surface</div>
+                            <div class="info-value" id="surfaceValue">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Platform</div>
+                            <div class="info-value" id="platformValue">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Product Area</div>
+                            <div class="info-value" id="productAreaValue">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Issue Type</div>
+                            <div class="info-value" id="issueTypeValue">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Assignment</div>
+                            <div class="info-value" id="assignmentValue">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">App Version</div>
+                            <div class="info-value" id="appVersionValue">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis -->
+                    <div class="section">
+                        <div class="section-title">Analysis</div>
+                        <div class="analysis-content" id="analysisContent">Analysis will appear here...</div>
+                    </div>
+
+                    <!-- Recommended Title -->
+                    <div class="section">
+                        <div class="section-title">
+                            Recommended Title
+                            <button class="copy-btn" onclick="copyToClipboard('newTitle', this)">Copy</button>
+                        </div>
+                        <div class="title-display" id="newTitle"></div>
+                    </div>
+
+                    <!-- Tags to Add -->
+                    <div class="section">
+                        <div class="section-title">
+                            Tags to Add
+                            <button class="copy-btn" onclick="copyTags(this)">Copy All</button>
+                        </div>
+                        <div class="tags-container" id="tagsToAdd"></div>
+                    </div>
+
+                    <!-- Triage Comment -->
+                    <div class="section">
+                        <div class="section-title">
+                            Triage Comment
+                            <button class="copy-btn" onclick="copyToClipboard('commentContent', this)">Copy</button>
+                        </div>
+                        <div class="comment-box" id="commentContent">Comment will appear here...</div>
+                    </div>
+
+                    <!-- Action Checklist -->
+                    <div class="section">
+                        <div class="section-title">Action Checklist</div>
+                        <div id="actionsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="output-section visible" id="emptyState">
+            <div class="triage-card">
+                <div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+                    <h3>Ready to Triage</h3>
+                    <p>Enter a Task ID above and click "Triage Bug" to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // TRIAGE LOGIC - Runs entirely in browser, no server needed
+        // ============================================================
+
+        const SURFACE_PATTERNS = {
+            'C50': {
+                keywords: ['c50', 'meta ai app', 'standalone app', 'metaai app', 'stellafori', 'fban/stellafori'],
+                userAgentPatterns: ['StellaForiOS', 'StellaForAndroid', 'FBAN/Stella'],
+                tags: ['c50-ios', 'c50-android', 'c50-'],
+                titlePrefix: 'c50',
+                oncalls: { ios: 'silverstone_ios', android: 'silverstone_android' }
+            },
+            'Ecto (meta.ai)': {
+                keywords: ['meta.ai', 'ecto', 'website'],
+                tags: ['Ecto-', 'meta.ai'],
+                titlePrefix: 'Ecto',
+                oncalls: { web: 'metaai_web' }
+            },
+            'FoA (Facebook)': {
+                keywords: ['facebook app'],
+                userAgentPatterns: ['FBAN/FB'],
+                tags: ['facebook', 'fb-'],
+                titlePrefix: 'FoA-FB',
+                oncalls: { ios: 'fb_ios_ai', android: 'fb_android_ai' }
+            },
+            'FoA (Instagram)': {
+                keywords: ['instagram app'],
+                userAgentPatterns: ['FBAN/Instagram'],
+                tags: ['instagram', 'ig-'],
+                titlePrefix: 'FoA-IG',
+                oncalls: { ios: 'ig_ios_ai', android: 'ig_android_ai' }
+            },
+            'FoA (WhatsApp)': {
+                keywords: ['whatsapp'],
+                tags: ['whatsapp', 'wa-'],
+                titlePrefix: 'FoA-WA',
+                oncalls: { all: 'whatsapp_ai' }
+            },
+            'FoA (Messenger)': {
+                keywords: ['messenger', 'msgr'],
+                userAgentPatterns: ['FBAN/Messenger', 'FBAN/Orca'],
+                tags: ['messenger', 'msgr-'],
+                titlePrefix: 'FoA-Msgr',
+                oncalls: { ios: 'messenger_ios_ai', android: 'messenger_android_ai' }
+            },
+            'Vibes App': {
+                keywords: ['vibes', 'vibes app'],
+                tags: ['vibes_app'],
+                titlePrefix: 'Vibes',
+                oncalls: { all: 'vibes_app_oncall' }
+            },
+            'Hatch': {
+                keywords: ['hatch'],
+                tags: ['hatch-'],
+                titlePrefix: 'Hatch',
+                oncalls: { all: 'hatch_oncall' }
+            }
+        };
+
+        const FEATURE_ROUTING = {
+            'AI Search': { keywords: ['search', 'web search', 'citation', 'sources', '1p citation', '3p'], tags: ['MetaAI_Search'], oncall: 'metaai_search_oncall' },
+            'Personalization': { keywords: ['memory', 'personalization', 'remember', 'preferences'], tags: ['meta_ai_p13n'], oncall: 'meta_ai_p13n_oncall' },
+            'Characters / AI Studio': { keywords: ['character', 'ai studio', 'custom ai', 'persona'], tags: ['aistudio'], oncall: 'ai_studio_oncall' },
+            'Media Generation': { keywords: ['imagine', 'image generation', 'generate image', 'media gen', 'reimagine', 'animate', 'remix'], tags: ['MetaAI_MediaGen'], oncall: 'media_gen_oncall' },
+            'Voice': { keywords: ['voice', 'speech', 'audio', 'microphone', 'liveai', 'immersive'], tags: ['meta_ai_voice'], oncall: 'meta_ai_voice_backend' },
+            'Growth/Sharing/Ranking': { keywords: ['share', 'sharing', 'growth', 'ranking', 'feed', 'notification'], tags: ['meta_ai_growth'], oncall: 'meta_ai_growth_oncall' }
+        };
+
+        const C50_FEATURES = {
+            'sidebar': { tag: 'c50-sidebar', name: 'Sidebar' },
+            'navigation': { tag: 'c50-AppNavigation', name: 'Navigation' },
+            'composer': { tag: 'c50-composer', name: 'Composer' },
+            'voice': { tag: 'c50-voice', name: 'Voice' },
+            'liveai': { tag: 'voice-liveai-c50', name: 'LiveAI' },
+            'history': { tag: 'c50-history', name: 'History' },
+            'settings': { tag: 'c50-settings', name: 'Settings' },
+            'login': { tag: 'c50-login', name: 'Login' },
+            'notifications': { tag: 'c50-notifications', name: 'Notification' },
+            'dictation': { tag: 'c50-dictation', name: 'Dictation' },
+            'projects': { tag: 'MetaAI2.0-Projects', name: 'Projects' },
+            'latency': { tag: 'MetaAI2.0-Latency', name: 'Latency' },
+            'read aloud': { tag: 'c50-read-aloud', name: 'ReadAloud' },
+            'incognito': { tag: 'c50-incognito-mode', name: 'Incognito' },
+            'something went wrong': { tag: 'c50-something-went-wrong', name: 'SWW' },
+            'video': { tag: 'c50-other', name: 'Other' },
+            'lightbox': { tag: 'c50-other', name: 'Other' }
+        };
+
+        const PRIORITY_KEYWORDS = {
+            'High': ['crash', 'broken', 'cannot use', 'blocking', 'urgent', 'security', 'data loss'],
+            'Medium': ['bug', 'issue', 'problem', 'not working', 'error', 'failed'],
+            'Low': ['minor', 'cosmetic', 'ui', 'visual', 'typo', 'polish', 'flash', 'flicker'],
+            'Wishlist': ['feature request', 'suggestion', 'enhancement', 'idea']
+        };
+
+        function triageBug() {
+            const taskId = document.getElementById('taskInput').value.trim();
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+
+            if (!taskId) {
+                showStatus('Please enter a Task ID', 'error');
+                return;
+            }
+            if (!title && !description) {
+                showStatus('Please paste the task title and/or description', 'error');
+                return;
+            }
+
+            const cleanId = taskId.replace(/^T/i, '');
+            const formattedId = 'T' + cleanId;
+            document.getElementById('taskInput').value = formattedId;
+
+            // Run triage logic
+            const result = runTriage(formattedId, title, description);
+            hideStatus();
+            displayResults(result);
+        }
+
+        function runTriage(taskId, title, description) {
+            const fullText = `${title} ${description}`.toLowerCase();
+            const userAgent = extractUserAgent(description);
+            const appVersion = extractAppVersion(description);
+
+            const surface = detectSurface(fullText, userAgent);
+            const platform = detectPlatform(fullText, userAgent);
+            const productArea = detectProductArea(fullText);
+            const c50Feature = surface.name === 'C50' ? detectC50Feature(fullText) : null;
+            const priority = determinePriority(fullText);
+            const issueType = determineIssueType(fullText);
+            const modality = detectModality(fullText);
+            const assignment = determineAssignment(surface, platform, productArea);
+            const tagsToAdd = generateTags(surface, platform, productArea, modality);
+            const newTitle = generateTitle(title, surface, platform, c50Feature, appVersion);
+            const analysis = generateAnalysis(surface, platform, productArea, modality, issueType, appVersion);
+            const comment = generateComment(taskId, surface, platform, productArea, assignment, analysis, appVersion, priority);
+
+            return {
+                taskId, originalTitle: title, surface: surface.name, platform, productArea: productArea.name,
+                issueType, modality, priority, assignment, tags: tagsToAdd, newTitle, analysis, comment, appVersion,
+                actions: [
+                    { text: 'Update task title', value: 'See above' },
+                    { text: 'Add tags', value: tagsToAdd.join(', ') },
+                    { text: 'Set assignment', value: assignment },
+                    { text: 'Add triage comment', value: 'Copy from above' },
+                    { text: 'Verify priority', value: 'Review impact' }
+                ]
+            };
+        }
+
+        function extractUserAgent(desc) {
+            const match = desc.match(/UserAgent:\s*([^\n]+)/i);
+            return match ? match[1].trim() : '';
+        }
+
+        function extractAppVersion(desc) {
+            const match = desc.match(/FBAV\/([0-9.]+)/);
+            return match ? match[1] : '';
+        }
+
+        function detectSurface(text, userAgent) {
+            const combined = `${text} ${userAgent}`.toLowerCase();
+            for (const [name, config] of Object.entries(SURFACE_PATTERNS)) {
+                if (config.userAgentPatterns) {
+                    for (const p of config.userAgentPatterns) {
+                        if (userAgent.toLowerCase().includes(p.toLowerCase())) return { name, ...config };
+                    }
+                }
+                for (const kw of config.keywords) {
+                    if (combined.includes(kw.toLowerCase())) return { name, ...config };
+                }
+            }
+            return { name: 'Unknown Surface', titlePrefix: 'Unknown', oncalls: {} };
+        }
+
+        function detectPlatform(text, userAgent) {
+            const combined = `${text} ${userAgent}`.toLowerCase();
+            if (['ios', 'iphone', 'ipad', 'fbsn/ios'].some(k => combined.includes(k))) return 'iOS';
+            if (['android', 'pixel', 'samsung'].some(k => combined.includes(k))) return 'Android';
+            if (['web', 'browser', 'chrome'].some(k => combined.includes(k))) return 'Web';
+            return 'Unknown';
+        }
+
+        function detectProductArea(text) {
+            for (const [name, config] of Object.entries(FEATURE_ROUTING)) {
+                for (const kw of config.keywords) {
+                    if (text.includes(kw.toLowerCase())) return { name, ...config };
+                }
+            }
+            return { name: 'General', oncall: null, tags: [] };
+        }
+
+        function detectC50Feature(text) {
+            for (const [kw, config] of Object.entries(C50_FEATURES)) {
+                if (text.includes(kw)) return config;
+            }
+            return { tag: 'c50-other', name: 'Other' };
+        }
+
+        function detectModality(text) {
+            if (['voice', 'speech', 'audio'].some(k => text.includes(k))) return 'Voice';
+            if (['image', 'photo', 'camera'].some(k => text.includes(k))) return 'Media';
+            return 'Text';
+        }
+
+        function determinePriority(text) {
+            for (const [priority, keywords] of Object.entries(PRIORITY_KEYWORDS)) {
+                for (const kw of keywords) {
+                    if (text.includes(kw.toLowerCase())) return priority;
+                }
+            }
+            return 'Medium';
+        }
+
+        function determineIssueType(text) {
+            if (text.includes('feature request') || text.includes('suggestion')) return 'Feature Request';
+            if (text.includes('how to') || text.includes('question')) return 'Question';
+            if (text.includes('wrong answer') || text.includes('hallucination')) return 'Model Quality';
+            return 'Bug';
+        }
+
+        function determineAssignment(surface, platform, productArea) {
+            if (productArea.oncall) return productArea.oncall;
+            const oncalls = surface.oncalls || {};
+            if (oncalls[platform.toLowerCase()]) return oncalls[platform.toLowerCase()];
+            if (oncalls.all) return oncalls.all;
+            return Object.values(oncalls)[0] || 'meta_ai_triage';
+        }
+
+        function generateTags(surface, platform, productArea, modality) {
+            const tags = [];
+            if (surface.name === 'C50') {
+                tags.push(platform === 'iOS' ? 'c50-ios' : platform === 'Android' ? 'c50-android' : 'c50-other');
+            } else if (surface.name === 'Vibes App') {
+                tags.push('vibes_app');
+            }
+            if (platform !== 'Unknown') tags.push(platform.toLowerCase());
+            if (productArea.tags) tags.push(...productArea.tags);
+            tags.push('ProdOps - Repro');
+            return [...new Set(tags)];
+        }
+
+        function generateTitle(originalTitle, surface, platform, c50Feature, appVersion) {
+            if (!originalTitle) return '';
+            if (surface.name === 'C50') {
+                const feature = c50Feature ? c50Feature.name : 'Other';
+                const plat = platform !== 'Unknown' ? `[${platform}]` : '';
+                const ver = appVersion ? `[${appVersion}]` : '';
+                return `[c50][${feature}]${plat}${ver} ${originalTitle}`;
+            }
+            const prefix = surface.titlePrefix || surface.name;
+            const plat = platform !== 'Unknown' ? ` [${platform}]` : '';
+            return `[${prefix}]${plat} ${originalTitle}`;
+        }
+
+        function generateAnalysis(surface, platform, productArea, modality, issueType, appVersion) {
+            let a = `This is a **${issueType}** reported on **${surface.name}**`;
+            if (platform !== 'Unknown') a += ` (${platform})`;
+            a += '.';
+            if (appVersion) a += ` App version: ${appVersion}.`;
+            if (productArea.name !== 'General') a += ` Related to **${productArea.name}** feature.`;
+            if (modality !== 'Text') a += ` Input modality: ${modality}.`;
+            return a;
+        }
+
+        function generateComment(taskId, surface, platform, productArea, assignment, analysis, appVersion, priority) {
+            return `## Triage Assessment
+
+**Surface:** ${surface.name}
+**Platform:** ${platform}
+**App Version:** ${appVersion || 'Not specified'}
+**Product Area:** ${productArea.name}
+**Issue Type:** Bug
+
+### Analysis
+${analysis}
+
+### Routing
+Assigning to **${assignment}** for investigation.
+
+### Priority
+${priority} - Review and adjust as needed.`;
+        }
+
+        function showStatus(message, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = message;
+            el.className = 'status-message visible ' + type;
+        }
+
+        function hideStatus() {
+            document.getElementById('statusMessage').className = 'status-message';
+        }
+
+        function displayResults(data) {
+            document.getElementById('emptyState').classList.remove('visible');
+            document.getElementById('outputSection').classList.add('visible');
+
+            document.getElementById('displayTaskId').textContent = data.taskId;
+            document.getElementById('displayOriginalTitle').textContent = data.originalTitle || 'No title';
+            document.getElementById('surfaceValue').textContent = data.surface;
+            document.getElementById('platformValue').textContent = data.platform;
+            document.getElementById('productAreaValue').textContent = data.productArea;
+            document.getElementById('issueTypeValue').textContent = data.issueType;
+            document.getElementById('assignmentValue').textContent = data.assignment;
+            document.getElementById('appVersionValue').textContent = data.appVersion || 'Unknown';
+            document.getElementById('analysisContent').textContent = data.analysis;
+            document.getElementById('newTitle').textContent = data.newTitle || 'Could not generate title';
+            document.getElementById('commentContent').textContent = data.comment;
+
+            // Priority badge
+            const badge = document.getElementById('priorityBadge');
+            badge.textContent = data.priority.toUpperCase();
+            badge.className = 'priority-badge priority-' + data.priority.toLowerCase();
+
+            // Tags
+            const tagsContainer = document.getElementById('tagsToAdd');
+            tagsContainer.innerHTML = '';
+            (data.tags || []).forEach(tag => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.textContent = tag;
+                tagEl.onclick = () => copyTagToClipboard(tag, tagEl);
+                tagsContainer.appendChild(tagEl);
+            });
+
+            // Actions
+            const actionsList = document.getElementById('actionsList');
+            actionsList.innerHTML = '';
+            (data.actions || []).forEach(action => {
+                const actionEl = document.createElement('div');
+                actionEl.className = 'action-item';
+                actionEl.innerHTML = `
+                    <input type="checkbox" class="action-checkbox" />
+                    <span class="action-text">${action.text}</span>
+                    <span class="action-value">${action.value}</span>
+                `;
+                actionsList.appendChild(actionEl);
+            });
+
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard(elementId, btn) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function copyTags(btn) {
+            const tags = Array.from(document.querySelectorAll('#tagsToAdd .tag')).map(t => t.textContent);
+            navigator.clipboard.writeText(tags.join(', ')).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy All';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function copyTagToClipboard(tag, el) {
+            navigator.clipboard.writeText(tag).then(() => {
+                const originalText = el.textContent;
+                el.textContent = '✓ Copied';
+                setTimeout(() => { el.textContent = originalText; }, 1000);
+            });
+        }
+
+        // Enter key to submit
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') triageBug();
+        });
+    </script>
+</body>
+</html>

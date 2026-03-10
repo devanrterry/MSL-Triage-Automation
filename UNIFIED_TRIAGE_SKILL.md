@@ -206,6 +206,34 @@
 
 ---
 
+# SURFACE: HATCH
+
+## Hatch Title Format
+
+```
+[Surface][Hatch][Feature][Platform] Summary of the issue
+```
+
+**Surface Options:** `c50` or `Ecto`
+
+> **NOTE:** No repro needed for Hatch bugs. If a bug in Hatch queue is actually a normal C50/Ecto bug, remove the `c50-Hatch` or `Ecto-Hatch` tag when moving.
+
+## Hatch Features → Tag → Owner
+
+| Feature | Definition | Tags | Assignment |
+|---------|------------|------|------------|
+| Client Issues | UI rendering, visual preview failures, point-and-click editing, client-side errors | `hatch-client` | hatch_oncall |
+| Auth and Login | CAT-based auth failures, login/logout, session management, permissions | `hatch-auth` | hatch_oncall |
+| Response Quality | AI-generated response quality, inaccurate code gen, hallucinated features, poor suggestions | `hatch-response-quality` | hatch_oncall |
+| VM Connection Failure | Pre-warmed instance unavailability, OD fallback failures, timeout errors, capacity issues | `hatch-vm` | hatch_oncall |
+| 3P Skills | Google Docs/Slides, Calendar, Workplace, Tasks, MetaMate, InternGraph API integrations | `hatch-3p-skills` | hatch_oncall |
+| Voice | Speech-to-text, voice command interpretation, audio processing within Hatch apps | `hatch-voice` | hatch_oncall |
+| Subagents | Agent coordination failures, multi-agent workflow, Confucius/Claude delegation | `hatch-subagents` | hatch_oncall |
+| Media | Media generation function within chat interface | `hatch-media` | hatch_oncall |
+| Channels | Channel orchestration, WhatsApp and Telegram connections | `hatch-channels` | hatch_oncall |
+
+---
+
 # FEATURE: AI SEARCH
 
 | Surface | Tags | Assignment |

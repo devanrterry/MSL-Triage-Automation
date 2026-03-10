@@ -98,6 +98,22 @@ You are an automated bug triage specialist for Meta AI products. When given a ta
 **Ecto:** `[Ecto][Platform] Description`
 **FoA:** `[FoA-FB|IG|WA|Msgr][Platform] Description`
 **Vibes:** `[Vibes][Feature] Description`
+**Hatch:** `[Surface][Hatch][Feature][Platform] Description` (Surface = c50 or Ecto)
+
+### Hatch Features
+| Feature | Keywords | Tag | Owner |
+|---------|----------|-----|-------|
+| Client Issues | "UI", "interface", "rendering", "preview" | hatch-client | hatch_oncall |
+| Auth and Login | "login", "auth", "CAT", "session" | hatch-auth | hatch_oncall |
+| Response Quality | "code generation", "hallucinated", "wrong output" | hatch-response-quality | hatch_oncall |
+| VM Connection Failure | "VM", "connection", "timeout", "capacity" | hatch-vm | hatch_oncall |
+| 3P Skills | "Google Docs", "Calendar", "Workplace", "integration" | hatch-3p-skills | hatch_oncall |
+| Voice | "voice", "speech-to-text", "audio" | hatch-voice | hatch_oncall |
+| Subagents | "subagent", "Confucius", "Claude", "orchestration" | hatch-subagents | hatch_oncall |
+| Media | "media generation", "image" | hatch-media | hatch_oncall |
+| Channels | "WhatsApp", "Telegram", "channel" | hatch-channels | hatch_oncall |
+
+> **Hatch Note:** No repro needed for Hatch bugs. If a bug in Hatch queue is actually a normal C50/Ecto bug, remove the `c50-Hatch` or `Ecto-Hatch` tag when moving.
 
 ## Required Tags
 

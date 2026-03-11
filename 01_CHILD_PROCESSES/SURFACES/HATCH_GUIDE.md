@@ -1,8 +1,8 @@
 # Surface: Hatch Triage Guide
 
+> **Document POMs**: Sargam Tahiliani
 > **Surface**: Hatch
-> **Last Updated**: March 2026
-> **Child Process Owner**: Meta AI Triage Team
+> **Last Updated**: February 25, 2026
 > **WP Group**: https://fb.workplace.com/groups/1235253001912535
 
 ---

@@ -1,25 +1,27 @@
-# Characters Bug Triage Operations Guide
+# Meta AI Studio (Characters) Triage Guide
 
-> **Your mission**: Efficiently triage bugs related to AI-generated characters and immersive character experiences across all Meta AI surfaces.
-
----
-
-## Quick Reference
-
-| Resource | Link/Command | Purpose |
-|----------|-------------|---------|
-| **Meta AI App** | iOS App Store / Google Play | Repro environment (C50) |
-| **Meta.ai** | [meta.ai](https://meta.ai) | Repro environment (Ecto) |
-| **FoA Apps** | FB, IG, WA, MSGR | Repro environment (FoA) |
-| **UDT Flow** | [UDT Form](https://www.internalfb.com/butterfly/form/749148824511801) | Automated triage routing |
+> **Feature**: Meta AI Studio & Characters
+> **Last Updated**: Dec 8, 2025
+> **Document POCs**: Devan Terry | Christian Brondon
+> **Audience**: Triage Specialists
 
 ---
 
-## Product Overview
+## Overview
 
-**Characters** refers to AI-generated characters within Meta AI, enabling immersive conversational experiences with unique personas.
+This document covers triage processes for issues related to the quality of Meta AI Studio and Character products across the Family of Apps (Facebook, Messenger, Instagram, C50, and WhatsApp). These issues are inclusive of all Meta AI Studio related issues.
 
-### Applicable Surfaces
+### What is AI Studio
+
+AI Studio is a product designed to facilitate the creation, engagement, and sharing of AI characters. It makes the process intuitive, creative, and fun.
+
+**Key Features:**
+- Accessible across multiple platforms: Web, Instagram, Messenger, WhatsApp, Facebook, and Meta AI App (C50)
+- Enables creating, engaging with, and managing user-generated AI characters
+
+---
+
+## Applicable Surfaces
 
 | Surface | Platform | Description |
 |---------|----------|-------------|
@@ -29,121 +31,91 @@
 
 ---
 
-## Feature Categories
+## Bug Triage Process
 
-### Character Feature Matrix
+### Step 1: Initial Identification & Triage
 
-| Feature | Tag | Owner | Description |
-|---------|-----|-------|-------------|
-| **Character Creation** | `MetaAI_Characters_Creation` | Characters Oncall | Creating new AI characters |
-| **Character Conversations** | `MetaAI_Characters_Chat` | Characters Oncall | Chatting with AI characters |
-| **Character Discovery** | `MetaAI_Characters_Discovery` | Characters Oncall | Finding and browsing characters |
-| **Character Profiles** | `MetaAI_Characters_Profiles` | Characters Oncall | Character profile pages and info |
-| **Character Customization** | `MetaAI_Characters_Custom` | ai_studio_creation_mobile | Custom character settings |
-| **Other** | `MetaAI_Characters_Other` | Characters Oncall | Issues not fitting other categories |
+1. **Identify Surface**: Where was the issue reported?
+2. **Identify Issue**: What is the most relevant issue on that surface?
+3. **Repro Attempt**: After identifying the issue, attempt repro on appropriate app/version (TS should NOT try to repro model quality issues - use "Skip" option in UDT)
 
-### Key Contacts
+**Task Title Format:**
+```
+[Product Area][Web, iOS or Android][App Version Mobile Only] Brief Issue Description
+```
 
-| Name | Role | Area |
-|------|------|------|
-| **TBD** | POM | Characters Triage Guide |
-| **TBD** | Characters Lead | Character Features |
+**Examples:**
+- `[Core Experiences][iOS][302.0.0.1] Character creation flow fails at voice selection`
+- `[Embodiment & Destination][Android][300.0.0.1] Avatar not matching personality`
+- `[Foundations][Web] Safety block on character creation`
 
 ---
+
+### Step 2: Identify Product Area
+
+| Product Area | Explanation | Tag |
+|--------------|-------------|-----|
+| **Core Experiences** | Empowering users to create, interact with, and personalize AI characters. Includes intuitive creation tools, immersive activities enabling dynamic interactions, and flexible customization options to fine-tune AI behavior and tone. | `ai-character-core-exp` |
+| **Embodiment & Destination** | Making AI agents visually expressive and emotionally intelligent. Includes facial expressions, body/hand motions. Optimizing destinations where users engage with AI (thread views, voice panels, search results). Demo AIs included. | `ai-embodiment-destination` |
+| **Foundations** | Ensures Meta AI delivers safe, capable, and personalized experiences. Addresses safety, multimodal capabilities (image gen, content retrieval, proactive messaging), personalization/memory, and RAG for enhanced conversations. | `ai-foundations` |
+
+---
+
+### Step 3: Identify Feature and Sub-Issues
+
+#### Core Experiences Features
+
+| Feature | Definition | Tag |
+|---------|------------|-----|
+| **Creation** | End-to-end process of designing AI characters through immersive, guided flow. Users define personality, voice, image, and context. Available on IG, Messenger, etc. | `ai-character-creation` |
+| **Activities / Scenes** | Interactive environments and scenarios for engaging with AI characters in dynamic ways. Enables richer, context-driven conversations bringing AI personas to life. | `ai-character-activities` |
+| **Customization** | Fine-tuning AI behavior and tone through customizable modes (flirty, serious, etc.). Allows users to tailor AI interactions to specific preferences. | `ai-character-customization` |
+| **AI Character Content** | Issues with updating settings during AI Studio Creation (or after) to enable profile, posts for character on IG or FB. Feedback on generated content for AI Character Profiles. | `ai-character-content` |
+
+#### Embodiment & Destination Features
+
+| Feature | Definition | Tag |
+|---------|------------|-----|
+| **Embodiment** | Character's physical appearance, movements, animation. Includes facial expressions, body/hand motions, emotional intelligence for natural, immersive interactions. | `ai-embodiment` |
+| **Character Voice (via chat)** | Issues with AI character's spoken output: unnatural voice, inconsistent voice, voice doesn't match persona (tone, gender, age, accent), incorrect language, audio issues (no sound when character appears talking). | `ai-character-voice` |
+| **Character Conversation Quality** | Conversational output issues: response accuracy, relevance, flow, grammar/spelling errors, memory errors, inappropriate/aggressive/suggestive responses. | `ai-character-conversation` |
+| **In-Thread UX** | Non-Embodiment and Non-Voice Chat UI issues: text not readable/poorly formatted, incorrect colors, messages not sent, AI not responding, Share/Copy/Like/Dislike buttons not working. | `ai-character-thread-ux` |
+| **Destination** | Locations/surfaces where users find and discover AI Characters. Includes AI home, discover characters tabs. | `ai-character-destination` |
+
+#### Foundations Features
+
+| Feature | Definition | Tag |
+|---------|------------|-----|
+| **Safety** | Safety-related issues: safety blocks on creation, AI repeating harmful content. | `ai-character-safety` |
+| **Multimodal, Personalization & Memory** | AI capabilities: image generation, reels retrieval, proactive messaging. Personalization when AI refers to Long-Term Memory or User profile/interests in conversation. | `ai-character-multimodal` |
+| **RAG & Web Search** | External sources for chat: web search, retrieval of previous chat context (RAG = Retrieval-Augmented Generation), leveraging external sources to enhance conversation. | `ai-character-rag` |
+
+#### AI Character Consumption Features
+
+| Feature | Definition | Tag |
+|---------|------------|-----|
+| **Profiles** | Issues related to user profile management: data accuracy, synchronization, visibility. | `ai-character-profiles` |
+| **Content MGMT (AI Studio)** | Problems with content creation, editing, publishing, or organization within AI Studio platform. | `ai-character-content-mgmt` |
+| **Relevance/Feed UI** | Issues affecting display, ranking, or relevance of content in feed, including algorithmic errors. | `ai-character-feed` |
+| **Content Generation** | Problems with automated content creation: errors, inaccuracies in generated text, images, or other media. | `ai-character-content-gen` |
+
+---
+
+### Step 4: Complete Triage
 
 ## Priority Definitions
 
-| Priority | Criteria | Examples |
-|----------|----------|----------|
-| **High** | Character functionality completely broken. Cannot create/chat with characters. Core experience significantly degraded. | Character creation fails, chat broken, characters not loading |
-| **Medium** | Character experience inconvenient but not blocking. UI/UX issues. | Minor display issues, slow loading |
-| **Low** | Minor issues with workarounds. Polish and improvements. | Visual polish, minor UX improvements |
-| **Wishlist** | Feature requests and suggestions. | New character features |
+| Priority | Character Product Experience (UI/UX/Functionality) | Character Model Quality & Safety |
+|----------|---------------------------------------------------|----------------------------------|
+| **High** | Experience completely broken. User cannot complete flow/chat. Core feature significantly degraded. Reliability/Infrastructure/Logging/Access issues. Character creation/publishing completely fails. Cannot discover or chat with characters. UI/UX bugs impacting retention/engagement. | **Safety (all)**: Violence, political figures, racial/ethnic biases. **Character-specific**: Content that shouldn't be allowed (violence, sexual, political), offensive/racially stereotypical/dangerous content, impersonates real people, harmful advice. **Top failure modes**. |
+| | | **OR**: Stops user from achieving goal (fails to generate responses, refuses without reason, output so incorrect user can't proceed, gets stuck in loop/crashes). Poses significant risk to user safety. Severe brand reputation impact. i18n issues (inconsistent language). |
+| **Medium** | Flow inconvenient but not blocking. UI/UX optimizations. Accessibility features. Character customization partially broken. Discovery/search returns suboptimal results. | Personality inconsistency (breaks character, forgets traits). Incorrect answers on facts/math/content. Embodiment issues (avatar/voice doesn't match personality). Moderate safety concerns (borderline inappropriate). |
+| | | **OR**: Interrupts flow but doesn't stop goal (partially relevant responses, needs rephrasing, noticeable delay/glitch, misinterprets part of prompt). Negatively impacts perception. Slight brand reputation impact. |
+| **Low** | Bugs with temporary workaround not impacting goals. Polish and improvements. | Response quality issues (verbosity, formatting). Minor personality nuances. Avatar/voice quality could be improved. Activity/scene responses could be richer. |
+| | | **OR**: Inconvenience that can be worked around. Some impact on perception. No serious safety risk. Requires attention to maintain quality. |
+| **Wishlist** | Feedback not immediately actionable. Ideas for next iteration. | Nice to have improvements. |
 
----
-
-## Triage Decision Tree
-
-```
-START: Character-related bug received
-         │
-         ├─── Is it a MODEL QUALITY issue (character responses)?
-         │    └── YES → Switch to Text Model Quality Guide
-         │
-         ├─── Identify the SURFACE:
-         │    ├── Meta AI App → Use C50 title format
-         │    ├── meta.ai → Use Ecto title format
-         │    └── FB/IG/WA/MSGR → Use FoA title format
-         │
-         ├─── Identify the CHARACTER FEATURE:
-         │    ├── Creation → MetaAI_Characters_Creation
-         │    ├── Conversations/Chat → MetaAI_Characters_Chat
-         │    ├── Discovery/Browse → MetaAI_Characters_Discovery
-         │    ├── Profiles → MetaAI_Characters_Profiles
-         │    └── Customization → MetaAI_Characters_Custom
-         │
-         ├─── Can you reproduce?
-         │    ├── YES → Document repro steps
-         │    └── NO → Mark as "Does Not Repro"
-         │
-         └─── Complete triage via UDT
-              └── Tag, prioritize, assign owner
-```
-
----
-
-## Practical Triage Workflow
-
-### Step 1: Initial Identification
-
-1. **Check if Model Quality Issue**
-   - If the issue is about character *responses* (what the character says) → Text Model Quality Guide
-   - If the issue is about character *functionality* (UI, creation, loading) → Continue with this guide
-
-2. **Identify the Surface**
-   - C50 (Meta AI App)
-   - Ecto (meta.ai)
-   - FoA (FB/IG/WA/MSGR)
-
-### Step 2: Repro Attempt
-
-- [ ] Which surface and platform?
-- [ ] Can you reproduce the issue?
-- [ ] What are the exact steps?
-- [ ] Which character(s) affected (if specific)?
-
-### Step 3: Identify the Feature
-
-**Task Title Format:**
-
-For C50:
-```
-[c50][Characters][Platform][App Version] Summary of the issue
-```
-
-For Ecto:
-```
-[Ecto][Characters] Summary of the issue
-```
-
-For FoA:
-```
-[App][Platform][Characters][App Version] Summary of the issue
-```
-
-### Step 4: Complete Triage via UDT
-
-1. **Tag** - Apply `MetaAI_Characters` + specific feature tag
-2. **Prioritize** - Use priority schema
-3. **Assign Owner** - Route to Characters oncall
-
----
-
-## KP Merge Rules
-
-- Only merge if the character issue is **exactly the same**
-- Different characters = Different bugs (unless it's a systemic issue affecting all characters)
-- Check if the issue is specific to one character or affects multiple
+Triage will then be expected to complete remaining triage steps (tag, prioritize, assign owner). The above actions should be automated via submission of the UDT form.
 
 ---
 
@@ -152,11 +124,18 @@ For FoA:
 | Guide | When to Use |
 |-------|-------------|
 | **Text Model Quality Guide** | Character response quality issues |
+| **Voice Model Quality Guide** | Character voice quality issues |
 | **C50 Guide** | Meta AI App UI/UX issues |
 | **Ecto Guide** | Meta AI Website UI/UX issues |
 | **FoA Guide** | Family of Apps UI/UX issues |
+| **Personalization Guide** | Personalization/memory issues |
+| **Media Generation Guide** | Media generation issues |
 
 ---
 
-*Last updated: March 2026*
-*Document POM: TBD*
+*Last updated: Dec 8, 2025*
+*Document POCs: Devan Terry | Christian Brondon*
+
+---
+
+*This guide is part of the Meta AI Triage System.*

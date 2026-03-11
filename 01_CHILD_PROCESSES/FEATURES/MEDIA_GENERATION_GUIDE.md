@@ -1,199 +1,163 @@
-# Media Generation Bug Triage Operations Guide
+# Media Generation Triage Guide
 
-> **Your mission**: Efficiently triage bugs related to AI-generated media (images, videos, music) across all Meta AI surfaces.
-
----
-
-## Quick Reference
-
-| Resource | Link/Command | Purpose |
-|----------|-------------|---------|
-| **Meta AI App** | iOS App Store / Google Play | Repro environment (C50) |
-| **Meta.ai** | [meta.ai](https://meta.ai) | Repro environment (Ecto) |
-| **FoA Apps** | FB, IG, WA, MSGR | Repro environment (FoA) |
-| **UDT Flow** | [UDT Form](https://www.internalfb.com/butterfly/form/749148824511801) | Automated triage routing |
+> **Feature**: Media Generation (Images & Videos)
+> **Last Updated**: Jan 7, 2025
+> **Document POC**: Rishi Shah
+> **Audience**: Triage Specialists
 
 ---
 
-## Product Overview
+## Overview
 
-**Media Generation** encompasses all AI-generated media content including images, videos, and music within Meta AI.
+This document covers triage processes for issues related to any generation, editing, or animation of media, which includes both images and videos.
 
-### Applicable Surfaces
+These issues can be found in the following surfaces:
+- **C50** - Meta AI App (iOS/Android)
+- **Ecto** - meta.ai website
+- **FoA** - IG, FB, MSGR, WA
 
-| Surface | Platform | Description |
-|---------|----------|-------------|
-| **C50** | iOS, Android | Media Gen in Meta AI App |
-| **Ecto** | Web | Media Gen on meta.ai |
-| **FoA** | FB, IG, WA, MSGR | Media Gen in Family of Apps |
-
----
-
-## Feature Categories
-
-### Media Generation Feature Matrix
-
-| Feature | Tag | Owner | Description |
-|---------|-----|-------|-------------|
-| **Image Generation** | `MetaAI_MediaGen_Image` | Media Oncall | AI-generated images (Imagine) |
-| **Video Generation** | `MetaAI_MediaGen_Video` | Media Oncall | AI-generated videos |
-| **Music Generation** | `MetaAI_MediaGen_Music` | Media Oncall | AI-generated music/audio |
-| **Remix** | `MetaAI_MediaGen_Remix` | Media Oncall | Remixing existing content |
-| **Media Sharing** | `MetaAI_MediaGen_Share` | Media Oncall | Sharing generated media |
-| **Media Safety** | `MetaAI_MediaGen_Safety` | Media Safety Team | Safety/policy issues with generated content |
-| **Other** | `MetaAI_MediaGen_Other` | Media Oncall | Issues not fitting other categories |
-
-### Key Contacts
-
-| Name | Role | Area |
-|------|------|------|
-| **Mark Nettles** | POM | Media Generation Guide |
-| **TBD** | Media Lead | Media Generation Features |
+> **Note**: For Vibes App issues, please refer to the specific Vibes App Triage Guide
 
 ---
 
-## Priority Definitions
+## Bug Triage Process
 
-| Priority | Criteria | Examples |
-|----------|----------|----------|
-| **High** | Media generation completely broken. Safety issues (generating harmful content). Core functionality blocked. | Cannot generate images, safety bypass, generation crashes |
-| **Medium** | Generation works but with issues. Quality degradation. UI/UX problems. | Slow generation, quality issues, minor UI bugs |
-| **Low** | Minor issues with workarounds. Polish and improvements. | Visual polish, minor quality improvements |
-| **Wishlist** | Feature requests and suggestions. | New media generation capabilities |
+### Step 1: Task Titling
 
----
-
-## Triage Decision Tree
-
+**C50 Task Titling:**
 ```
-START: Media Generation bug received
-         │
-         ├─── Is it a MODEL SAFETY issue?
-         │    └── YES → Tag: MetaAI_MediaGen_Safety
-         │         └── Route to Media Safety Team
-         │
-         ├─── Is it a TEXT MODEL QUALITY issue (prompt understanding)?
-         │    └── YES → Switch to Text Model Quality Guide
-         │
-         ├─── Identify the SURFACE:
-         │    ├── Meta AI App → Use C50 title format
-         │    ├── meta.ai → Use Ecto title format
-         │    └── FB/IG/WA/MSGR → Use FoA title format
-         │
-         ├─── Identify the MEDIA TYPE:
-         │    ├── Image Generation → MetaAI_MediaGen_Image
-         │    ├── Video Generation → MetaAI_MediaGen_Video
-         │    ├── Music Generation → MetaAI_MediaGen_Music
-         │    ├── Remix → MetaAI_MediaGen_Remix
-         │    └── Sharing → MetaAI_MediaGen_Share
-         │
-         ├─── Can you reproduce?
-         │    ├── YES → Document repro steps + prompt used
-         │    └── NO → Mark as "Does Not Repro"
-         │
-         └─── Complete triage via UDT
-              └── Tag, prioritize, assign owner
+[C50 Media][Feature][Platform][App Version] Summary of the issue
 ```
 
----
+**Ecto Task Titling:**
+```
+[Website][Feature] Summary of the issue
+```
 
-## Issue Types
-
-### 3.1 Image Generation Issues
-
-| Issue Type | Description | Tag |
-|------------|-------------|-----|
-| **Failed Generation** | Image fails to generate | `MetaAI_MediaGen_Image` |
-| **Quality Issues** | Generated image quality problems | `MetaAI_MediaGen_Image` |
-| **Wrong Output** | Image doesn't match prompt | `MetaAI_MediaGen_Image` |
-| **Safety Bypass** | Generated harmful/inappropriate content | `MetaAI_MediaGen_Safety` |
-
-### 3.2 Video Generation Issues
-
-| Issue Type | Description | Tag |
-|------------|-------------|-----|
-| **Failed Generation** | Video fails to generate | `MetaAI_MediaGen_Video` |
-| **Playback Issues** | Video won't play | `MetaAI_MediaGen_Video` |
-| **Quality Issues** | Video quality problems | `MetaAI_MediaGen_Video` |
-
-### 3.3 Music Generation Issues
-
-| Issue Type | Description | Tag |
-|------------|-------------|-----|
-| **Failed Generation** | Music fails to generate | `MetaAI_MediaGen_Music` |
-| **Playback Issues** | Audio won't play | `MetaAI_MediaGen_Music` |
-| **Quality Issues** | Audio quality problems | `MetaAI_MediaGen_Music` |
+**FoA Task Titling:**
+```
+[App][Platform][Feature][App Version] Summary of the issue
+```
+> Note: If it's web, remove the app version section
 
 ---
 
-## Practical Triage Workflow
+### Step 2: Task Template
 
-### Step 1: Initial Identification
+TS should input the task template and fill out the requested details.
 
-1. **Check if Safety Issue**
-   - If user generated harmful/inappropriate content → Media Safety Team
-   - Route with `MetaAI_MediaGen_Safety` tag
+**For Model Quality/Safety issues**: Use the model template
+- Model media issues relate to accuracy and safety of the media requested
+- Examples: Images/videos irrelevant to what user wanted, media being inappropriate or inaccurate
 
-2. **Check if Model Quality Issue**
-   - If the issue is about prompt understanding → Text Model Quality Guide
-   - If the issue is about generation quality/functionality → Continue with this guide
+**For Other Issues**: Use the non-model quality template
+- Includes UI/UX issues, image/video resolution, interface issues
+- Examples: Unclear visual cues, UI components not working, confusing layouts
 
-### Step 2: Repro Attempt
-
-- [ ] Which surface and platform?
-- [ ] Which media type? (Image/Video/Music)
-- [ ] What prompt was used?
-- [ ] Can you reproduce the issue?
-- [ ] What are the exact steps?
-
-### Step 3: Identify the Feature
-
-**Task Title Format:**
-
-For C50:
-```
-[c50][MediaGen][Platform][App Version] Summary of the issue
-```
-
-For Ecto:
-```
-[Ecto][MediaGen] Summary of the issue
-```
-
-For FoA:
-```
-[App][Platform][MediaGen][App Version] Summary of the issue
-```
-
-### Step 4: Complete Triage via UDT
-
-1. **Tag** - Apply `MetaAI_MediaGen` + specific media type tag
-2. **Prioritize** - Use priority schema (Safety issues = High)
-3. **Assign Owner** - Route to Media oncall (or Safety team)
+**Repro Attempt**: After identifying the right app experience, TS should attempt repro on the correct App. TS should NOT try to repro model quality issues (use "Skip" option in UDT).
 
 ---
 
-## Media Safety Guidelines
+### Step 3: Identify the Specific Product Area within Media
 
-### When to Route to Safety Team
+#### FoA Media Features
+> Visual Guide: FOA Media Feature Visual Guide
 
-- User was able to generate violent/harmful imagery
-- Generated content violates Meta policies
-- Safety filters failed to block inappropriate requests
-- Privacy concerns with generated content
+| Product/Feature | Description | Tags |
+|-----------------|-------------|------|
+| **Image Generation** | Generating images, usually via the "Imagine" prompt word | `imagine-intents` |
+| **Image Animation** | Animating images either uploaded or created | `imagine-animate` |
+| **MEmu (Imagine Me)** | Creating images of yourself prompted by "Imagine me…" | |
+| **WEmu (Imagine Us)** | Creating images of others prompted by "Imagine Us…" | |
+| **Image Editing** | Editing images that have been uploaded or created | `imagine-editing` |
+| **Video Editing** | Uploading a video and editing via filters for subject or background | `movieGen` |
 
-### Safety Tags
-- `MetaAI_MediaGen_Safety` - General safety issues
-- Tag with appropriate policy violation type
+#### Ecto Media Features
+> Visual Guide: Web Media Visual Guide
+
+| Product/Feature | Description | Tags |
+|-----------------|-------------|------|
+| **Swap Me** | Swap yourself into videos | `concord-swapme` |
+| **Text to Image Creation** | Generate images from text | `ecto-media-T2I` |
+| **Editing** | Edit images/videos | `ecto-media-editing` |
+| **Extend** | Extend images/videos | `ecto-media-extend` |
+| **Text to Video** | Generate videos from text | `ecto-media-T2V` |
+| **Video to Video** | Transform videos | `ecto-media-V2V` |
+| **I2V (Animation)** | Image to video animation | `ecto-media-I2V` |
+| **Lipsync** | Lip sync features | `ecto-media-lipsync` |
+| **Feed** | Media feed issues | `ecto-media-feed` |
+| **Comment Bottom Sheet** | Comment UI | `ecto-media-comment-bottom-sheet` |
+| **Posting Video to Feed** | Video posting | `ecto-media-posting-videos` |
+| **Lightbox** | Lightbox viewer | `ecto-media-lightbox` |
+| **Media Gallery** | Gallery management | `ecto-media-media-gallery` |
+| **Text Overlay** | Text on media | `ecto-media-text-overlay` |
+| **Music** | Music features | `ecto-media-music` |
+| **Notifications** | Media notifications | `ecto-media-notifications` |
+| **Restyle** | Restyle media | `ecto-media-restyle` |
+| **Voiceover** | Voice overlay | `ecto-media-voiceover` |
+| **Model Quality** | Model accuracy, reliability, performance issues | `AI-Model-Umbrella`, `MetaAI_Model` |
+| **Model Safety** | Harmful, biased, or unsafe outputs | `AI-Model-Umbrella`, `MetaAI_Model` |
+
+#### C50 Media Features (iOS and Android)
+> Visual Guide: Media C50 Visual Guide App
+
+| Product/Feature | Description | Tags |
+|-----------------|-------------|------|
+| **I2V (Animate)** | Image to video animation | `c50-media-I2V-animate` |
+| **V2V (Video to Video)** | Video transformation/restyle | `c50-media-I2I-V2V-restyle` |
+| **Create/Edit** | Create and edit media | `c50-media-create/edit` |
+| **Remix** | Remix content | `c50-media-remix` |
+| **Text Overlay** | Text on media | `c50-media-text-overlay` |
+| **Extend** | Extend media | `c50-media-extend` |
+| **Lipsync** | Lip sync features | `c50-media-lipsync` |
+| **T2V** | Text to video | `c50-media-t2v` |
+| **Swap Me** | Swap yourself into videos | `concord-swapme` |
+| **SAM3/Effects** | SAM3 effects | `c50-sam3` |
+| **Video Controls** | Video player controls | `c50-videocontrols` |
+| **AI Profiles** | AI profile features | `c50-ai-profiles` |
+| **Immersive Feed/New Discover Feed** | Feed experience | `c50-immersivefeed` |
+| **Comment Bottom Sheet** | Comment UI | `c50-comment-bottomsheet` |
+| **Posting Video to Feed** | Video posting | `c50-post-video-to-feed` |
+| **Lightbox** | Lightbox viewer | `c50-media-lightbox` |
+| **Media Gallery** | Gallery management | `c50-media-media-gallery` |
+| **Music** | Music features | `c50-media-music` |
+| **Notifications** | Media notifications | `c50-media-notifications` |
+| **Restyle** | Restyle media | `c50-media-i2i-v2v-restyle` |
+| **Voiceover** | Voice overlay | `c50-media-voiceover` |
+| **Model Quality** | Model accuracy, reliability, performance issues | `AI-Model-Umbrella`, `MetaAI_Model` |
+| **Model Safety** | Harmful, biased, or unsafe outputs | `AI-Model-Umbrella`, `MetaAI_Model` |
 
 ---
 
-## KP Merge Rules
+### Step 4: Determine Priority and Complete Triage
 
-- Only merge if the media generation issue is **exactly the same**
-- Different prompts = Different bugs (unless systemic)
-- Different media types (image vs video) = Different bugs
-- Safety issues should NOT be merged
+> **⚠️ Always High Priority Features:** Swap Me, Voiceover, TTS, Lipsync
+
+For any bugs not related to Swap Me, Voiceover, TTS, or Lipsync, use the prioritization framework below:
+
+| Priority | Functionality / Usability | MediaGen Model Quality, Safety, Integrity |
+|----------|---------------------------|-------------------------------------------|
+| **High** | **Critical Functionality Breakage**: Model output significantly impacts usability. Consistent failure to generate images. Images severely distorted, corrupted, or extremely poor quality. Inability to generate images meeting basic requirements (aspect ratio, resolution). | **Severe Safety and Integrity Issues**: Violence, hate speech, discriminatory content. Explicit or suggestive content. Politically sensitive or biased content. Content promoting harm or danger. |
+| **Medium** | **Usability Concerns**: Slow generation times. Difficulty understanding/interpreting generated images. Inconsistencies in formatting or layout. | **Noticeable Quality Issues**: Inconsistent or unrealistic styles. Incorrect/missing details (hands, fingers, facial features). Images not visually appealing or lacking coherence. Wrong number of hands/fingers, disembodied appendages. |
+| **Low** | Not Applicable for MediaGen tasks | Not Applicable for MediaGen tasks |
+| **Wishlist** | Feedback not immediately actionable. Ideas for next iteration. | |
+
+---
+
+### Step 5 (FoA Only): Identify Specific Issue Type
+
+> Skip for C50/Ecto issues
+
+| Issue Type | Description |
+|------------|-------------|
+| **(UI/UX) Product Issue** | Issues with product behavior, how product works, latency, etc. |
+| **(UI/UX) Interface** | Issue with user flows and user interface. Example: "I don't like the imagine entrypoint being here in the app" |
+| **Multimodal Routing** | User requests to edit image/video BUT response given in text format instead of media. Example: Prompt "Create an image of a cat" → Response "A furry orange animal sitting on the couch" (text format) |
+| **Intent Detection / Prompt Rewriting** | Imagine edit request → incorrect image generating response. Example: "Change color of hat to red" → generates new image of red hat instead of editing existing one |
+| **Media Model Quality** | Image/video response did not accurately depict user's prompt. Example: Prompt "Imagine an apple" → Image of apple with two stems, OR image of orange |
+| **Media Model Safety (General)** | AI bot generates images/videos that violate integrity and safety policies (inappropriate, dangerous, etc.) |
+| **Media Model Safety (False Refusal)** | AI bot says it cannot generate image/video when it should have with no problem |
+| **Wishlist Task** | Feature request or general feedback, NOT a bug |
 
 ---
 
@@ -202,11 +166,17 @@ For FoA:
 | Guide | When to Use |
 |-------|-------------|
 | **Text Model Quality Guide** | Prompt understanding issues |
+| **Voice Model Quality Guide** | Voice/audio issues |
 | **C50 Guide** | Meta AI App UI/UX issues |
 | **Ecto Guide** | Meta AI Website UI/UX issues |
 | **FoA Guide** | Family of Apps UI/UX issues |
+| **Vibes App Guide** | Vibes-specific media issues |
 
 ---
 
-*Last updated: March 2026*
-*Document POM: Mark Nettles*
+*Last updated: Jan 7, 2025*
+*Document POC: Rishi Shah*
+
+---
+
+*This guide is part of the Meta AI Triage System.*

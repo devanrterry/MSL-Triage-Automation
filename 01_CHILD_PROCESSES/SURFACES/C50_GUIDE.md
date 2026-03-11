@@ -40,7 +40,7 @@
 | **Sidebar** | `c50-sidebar` | silverstone_ios + silverstone_Android | Primary navigation to all app destinations (Media, Notifications, History, Settings, Profile) |
 | **App Navigation (Production)** | `c50-AppNavigation` | silverstone_ios + silverstone_Android | Sliding panel for quick access to Home, Explore, Library via hamburger icon or swipe |
 | **App Navigation 2.0** | `MetaAI2.0-NavIA`, `c50-NavIA2.0`, `MetaAI2.0` | silverstone_ios + silverstone_Android | New Navigation menu for MetaAI 2.0 |
-| **Convo Starters** | `c50-convostarters` | silverstone_ios + silverstone_Android | Starter prompts shown when opening a MetaAI chat thread |
+| **Non Personalized Convo Starters** | `c50-convostarters` | silverstone_ios + silverstone_Android | Starter prompts shown to a user when they open a MetaAI chat thread, designed to help initiate a conversation without the user needing to formulate a prompt themselves |
 | **Settings** | `c50-settings` | silverstone_ios + silverstone_Android | Controls for app, Meta AI, and individual devices |
 | **Account** | `c50-account` | silverstone_ios + silverstone_Android | Personal information, settings, and preferences management |
 | **Integrity** | `c50-integrity` | silverstone_ios + silverstone_Android | Content moderation tools (block, report, flag content) |
@@ -60,16 +60,16 @@
 | **Incognito Mode** | `c50-incognito-mode`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Incognito chats that won't appear in memory |
 | **Dictation** | `c50-dictation` | silverstone_ios + silverstone_Android | Speak prompts to Meta AI, transcribed to text |
 | **Something Went Wrong** | `c50-something-went-wrong` | silverstone_ios + silverstone_Android | "Something went wrong" error messages (red text) |
-| **Response UX - Formatting** | `c50-core-ux-formatting`, `MetaAI2.0` | silverstone_ios + silverstone_Android | UX issues from model's response formatting |
+| **Response UX - Formatting and Rich Responses** | `c50-core-ux-formatting`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Any UX issues stemming from the model's response |
 | **Mode - Fast** | `c50-mode-fast`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Fast model option for quick responses |
 | **Mode - Thinking** | `c50-mode-thinking`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Thinking model option for better answers |
-| **Global Search** | `c50-global-search`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Search through previous conversations and topics |
+| **Global Search (Conversation Search)** | `c50-global-search`, `MetaAI2.0` | silverstone_ios + silverstone_Android | The ability to search through previous conversations and topics |
 | **Stop Generation** | `c50-stop-generation`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Stop generation process via square icon |
 | **Basic Regenerate** | `c50-basic-regenerate`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Regenerate the response |
 | **Partial Reply** | `c50-partial-reply`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Select part of response for follow-up prompts |
 | **Chain of Thought** | `c50-chain-of-thought`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Pop-up showing reasoning process |
-| **Latency** | `MetaAI2.0-Latency` | silverstone_ios + silverstone_Android | Response delay issues |
-| **Projects** | `MetaAI2.0-Projects` | metaai_project_developers | Group related chats, files, custom instructions |
+| **Latency** | `MetaAI2.0-Latency` | silverstone_ios + silverstone_Android | The delay between when a user submits a prompt and when the response (text or media) begins to appear on their screen, with high latency negatively impacting user experience |
+| **Projects** | `MetaAI2.0-Projects` | metaai_project_developers | Projects lets you group related chats, files, and custom instructions in one place. Whether you're managing ongoing work like tracking health results or planning a trip, Projects keeps everything tidy and easily accessible. You can create a project, add multiple conversation threads, and upload files—all organized under a single topic for quick reference |
 | **Other** | `c50-other`, `MetaAI2.0` | silverstone_ios + silverstone_Android | Issues not fitting other categories |
 
 ### Voice Features
@@ -77,7 +77,7 @@
 | Feature | Tag(s) | Owner | Description |
 |---------|--------|-------|-------------|
 | **LiveAI** | `voice-liveai-c50` | meta_ai_voice_backend | Real-time Meta AI voice session (live, streaming conversation) |
-| **ImmersiveUX** | `voice-immersiveUX` | meta_ai_voice_backend | Full-screen immersive voice "call" UI experience |
+| **ImmersiveUX** | `voice-immersiveUX` | meta_ai_voice_backend | Full-screen immersive voice "call" UI experience in C50 |
 | **Other Voice** | `c50-voice` | meta_ai_voice_backend | Other voice-related issues |
 
 > **Voice Model Issues**: Tag with `AI-Model-Umbrella`, `MetaAI_Model`, `MetaAI_Voice`
@@ -276,9 +276,9 @@ Examples:
 > ⚠️ **Important**: Only merge bugs if the issue reported is the SAME.
 
 **Critical Merge Rules:**
-- **Model Quality Tasks**: Do NOT merge unless prompt AND response are exactly the same
-- **Do NOT merge** Concord app type into old app version (C50)
-- **Error IDs**: Before merging tasks with error messages, ensure Error ID is exactly the same
+- **Model Quality Tasks**: Tasks should NOT be merged unless the prompt and response is the same (e.g. the issue is an exact duplicate). Even if prompts are close, they should be triaged as individual tasks.
+- **Do NOT merge** the Concord app type into the old app version (C50)
+- **Error IDs**: Before merging tasks with error messages, make sure the Error ID is exactly the same as well
 
 For "Something Went Wrong" errors:
 - Only merge if the **error ID** after the message is identical

@@ -1,14 +1,28 @@
 # Surface: Vibes App Triage Guide
 
 > **Surface**: Vibes App
-> **Last Updated**: March 2026
-> **Child Process Owner**: Meta AI Triage Team
+> **Last Updated**: Jan 15, 2026
+> **POM**: Rishi Shah
+> **Audience**: Triage Specialists
+
+---
+
+## Key Resources
+
+- [Vibes App Triage Documentation](https://www.internalfb.com/intern/wiki/Vibes_App_Triage/)
+- WP Group: [Join for Dogfooding](https://fb.workplace.com/groups/vibes_app)
 
 ---
 
 ## Overview
 
-Vibes App is a Meta AI-powered mobile application focused on social and creative experiences. This guide covers triage operations for bugs and issues reported on the Vibes App surface.
+This document is intended to cover the triage processes for issues related to issues reported on the Vibes App.
+
+The standard text expander should be used for all of these issues, unless the issue is identified to be a text or voice model quality issue, then model quality text expander should be used.
+
+### Instructions for Dogfooding
+1. Join the WP Group (link above)
+2. Download the Vibes app from Mobile Home (the app image is a "Play" icon with a circle around it)
 
 ---
 
@@ -38,56 +52,94 @@ Vibes App is a Meta AI-powered mobile application focused on social and creative
 
 ---
 
-## Feature Areas
+## Step 2: Identify Feature
 
-| Feature | Description | Tag | Owner/Oncall |
-|---------|-------------|-----|--------------|
-| Core Experience | Main Vibes interactions | `vibes-core` | vibes_oncall |
-| Social Features | Social interactions and sharing | `vibes-social` | vibes_oncall |
-| Creative Tools | Content creation tools | `vibes-creative` | vibes_oncall |
-| Notifications | Push and in-app notifications | `vibes-notifications` | vibes_oncall |
-| Settings | App settings and preferences | `vibes-settings` | vibes_oncall |
-| Onboarding | New user onboarding | `vibes-onboarding` | vibes_oncall |
+| Feature | Definition | Tag |
+|---------|------------|-----|
+| **Feed** | Any issue on the Feed page which is the "Home" icon on the bottom left | `vibes-feed` |
+| **Creation** | Generate new videos using AI-powered tools, prompts, and visual or audio customization options by tapping the "Plus" icon in the middle | `vibes-creation` |
+| **Lightbox** | Lightbox is the UI when clicking on an image/video | `vibes-lightbox` |
+| **Convo Starters** | Pre-written suggestions shown on the creation tab, seen on top of the screen | `vibes-convostarters` |
+| **Media Gallery** | Access and manage all your created, remixed, and saved videos in one organized location by tapping the "Portrait" icon second from the left | `vibes-gallery` |
+| **Text Overlay** | Allows users to add, edit, or display text directly on top of images or videos | `vibes-textoverlay` |
+| **Swap** | Easily swap yourself or friends into videos, changing the starring role or visual elements with a single tap | `vibes-swap` |
+| **Swap Onboarding** | Guided introduction to the Swap feature, helping users understand how to add themselves or others to videos | `vibes-swap-onboarding` |
+| **Profile** | Showcase your creations, remixes, and personal information, and manage your public presence in the app | `vibes-profile` |
+| **Music** | Add, edit, or remix music tracks in your videos, including voice recording and lip sync features | `vibes-music` |
+| **Activity Tab** | Track your recent interactions, video views, likes, comments, notifications and engagement history | `vibes-activity` |
+| **Remix** | Edit and personalize existing videos by changing visuals, music, dialogue, or starring roles | `vibes-remix` |
+| **Notifications** | Receive alerts about new content, collaborations, mentions, and activity related to your account | `vibes-notifications` |
+| **Sharing** | Distribute your videos to the Vibes feed, send via DM, or cross-post to Facebook and Instagram Stories/Reels | `vibes-sharing` |
+| **Account** | Manage your login credentials, linked social profiles, and account security settings | `vibes-account` |
+| **Settings** | Customize app preferences, privacy controls, notification options | `vibes-settings` |
+| **Safety** | Any issues focused on preventing physical, psychological, or social harm. Examples include hate speech, violence, self-harm, etc. | `vibes-safety` |
+| **Integrity** | Focus on the trustworthiness, accuracy, and reliability of content. Examples include account consent (youth) or blocking an account doesn't work | `vibes-integrity` |
+| **Characters** | AI-generated characters, with a focus on enabling immersive experiences | `vibes-characters` |
+| **Spaces** | Closed groups on Vibes that users can create with their friends to collaborate and share media together in a private space | `vibes-spaces` |
+| **Model Quality** | Any model quality related issues | `vibes-model-quality` |
 
 ---
 
-## Triage Process
+## Step 3: Known Problems (KP) | Identify Known Problems
 
-### Step 1: Identify Issue Type
+- **Error IDs**: Before merging tasks with error messages, make sure the Error ID is exactly the same as well
+- Follow the KP process outlined in the Triaging Parent Process
 
-| Issue Type | Description | Priority Guidance |
-|------------|-------------|-------------------|
-| Crash | App crashes or force closes | High |
-| Functional Bug | Feature not working as expected | Medium-High |
-| Performance | Slow/laggy experience | Medium |
-| UI/UX | Visual or interaction issues | Medium-Low |
-| Enhancement | Feature requests | Wishlist |
+---
 
-### Step 2: Apply Tags
+## Step 4: Complete Triage
+
+Triage will then be expected to complete remaining triage steps (tag, prioritize, and assign owner).
 
 **Task Title Format:**
 ```
-[Vibes][Feature][Platform][App Version] Brief description
+[Vibes App][Feature][Platform][App Version] Summary of the issue
 ```
 
-**Example Titles:**
-- `[Vibes][Creative][iOS][2.1.0] Filter not applying to photos`
-- `[Vibes][Social][Android][2.0.5] Unable to share content with friends`
+**Examples:**
+- `[Vibes App][Creation][iOS][2.1.0] Video generation fails after prompt submission`
+- `[Vibes App][Swap][Android][2.0.5] Unable to swap face into video`
+- `[Vibes App][Feed][iOS][2.1.0] Videos not loading in feed`
 
-### Step 3: Route to Owner
-
-Primary oncall: `vibes_oncall`
+The above actions should be automated via submission of the UDT form.
 
 ---
 
 ## Priority Definitions
 
-| Priority | Criteria | Response Time |
-|----------|----------|---------------|
-| **High** | App crashes, login failures, data loss | < 4 hours |
-| **Medium** | Feature degradation, performance issues | < 24 hours |
-| **Low** | Minor bugs, cosmetic issues | < 1 week |
-| **Wishlist** | Feature requests, improvements | Backlog |
+| Priority | Product Bugs - Functionality / Usability | Vibes App Model Quality |
+|----------|------------------------------------------|-------------------------|
+| **High** | High priority bugs that block core product functionality, cause major regressions, or significantly degrade the user experience: | Severe Safety and Integrity Issues - model generates content that poses significant risk: |
+| | • Crash & App Stall | • Violence, hate speech, or discriminatory content |
+| | • Any broken functionality - can't complete or can't load items | • Explicit or suggestive content |
+| | • Creation, Posting, Remix, upload, edit, Delete | • Politically sensitive or biased content |
+| | • Sharing, Like | • Content that promotes harm or danger |
+| | • Feed - Broken/Can't load Tab | |
+| | • Pagination (tail loads) don't work | |
+| | • Navigation issues (unintended tab reset, scroll position reset) | |
+| | • Issues with navigating to gallery after creation | |
+| | • Same content after PTR or app restart (ranking issues) | |
+| | • Midcards CTAs not working | |
+| | • Search being broken | |
+| | • Notification not rendering | |
+| | • Broken push/jewel notif click experience | |
+| | • Broken deeplinks | |
+| | • Security, privacy, Account or compliance issues | |
+| | • Login/logout issues | |
+| | • Load times above 10s | |
+| | • UI issues that affect functionality | |
+| | • Safety and Integrity issues | |
+| **Medium** | Medium priority bugs - important but don't block core functionality: | Noticeable Quality Issues - model generates images with flaws: |
+| | • UI does not match designs but doesn't block usage | • Inconsistent or unrealistic image styles |
+| | • Performance slowdowns with moderate reproducibility | • Incorrect or missing details (hands, fingers, facial features) |
+| | • Bugs affecting non-key, less-frequently-used functionality | • Images not visually appealing or lacking coherence |
+| | • Issues with straightforward workarounds | • Wrong number of hands/fingers, disembodied appendages |
+| | • Moderate number of user reports | • Image quality, resolution, style issues |
+| | • UI Misalignments, minor overlaps | |
+| | • Content and spelling issues (non privacy/legal) | |
+| | • Missing Error/empty state UI | |
+| **Low** | Bugs with temporary workaround not impacting end-user goals. Suggestions, polish, and improvements that are nice to have but not urgent. | Not Applicable for MediaGen tasks |
+| **Wishlist** | Feedback not immediately actionable, nice to have, ideas for next iteration | Feedback not immediately actionable, nice to have, ideas for next iteration |
 
 ---
 

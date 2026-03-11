@@ -1,6 +1,9 @@
 # Ecto Meta.ai Bug Triage Operations Guide
 
 > **Your mission**: Efficiently triage bugs, gather context for Engineering, and enable rapid fixes for the Meta AI website (Ecto).
+> **Last Updated**: Dec 10, 2025
+> **Document POC**: Sargam Tahiliani
+> **Audience**: Triage Specialists
 
 ---
 
@@ -40,31 +43,32 @@
 | **Growth (QP, Upsells)** | `MetaAI_Ecto_Growth` | *See Growth Guide* | User engagement and retention through promotions |
 | **Sharing (Share to FoA)** | `MetaAI_Ecto_Sharing` | *See Growth Guide* | Share content across platforms and apps |
 | **AI Search** | `MetaAI_Ecto_Search` | *See Search Guide* | AI-powered search results |
-| **Immersive Feed** | `MetaAI_Ecto_immersivefeed` | Upforgrabs | New revamped Feed showing video only posts |
-| **Video Controls** | `MetaAI_Ecto_videocontrols` | Upforgrabs | Like, comment controls, share, remix videos |
-| **Assistant UI (Minus Feed)** | `MetaAI_Ecto_AssistantUI` | Upforgrabs | Assistant interface (excluding feed) |
-| **Profile** | `MetaAI_Ecto_Profile` | Upforgrabs | Profile section, editing/viewing personal info |
-| **Video Public Post Lightbox** | `MetaAI_Ecto_videoLightbox` | Upforgrabs | Video public post lightbox feature |
-| **Video Comments** | `MetaAI_Ecto_videocomments` | Upforgrabs | Leaving, viewing, sorting comments on videos |
-| **Post Video to Feed** | `MetaAI_Ecto_postVideotofeed` | Upforgrabs | Sharing videos to user's feed |
-| **Navigation** | `MetaAI_Ecto_navigation` | Upforgrabs | Menus, buttons, interactive elements |
-| **Login** | `MetaAI_Ecto_login` | Upforgrabs | Login, credentials, authentication |
-| **Logged-Out Flow** | `MetaAI_Ecto_loggedoutflow` | Upforgrabs | Platform usage while logged out |
-| **Composer** | `MetaAI_Ecto_composer` | Upforgrabs | Creating new content |
-| **Notifications** | `MetaAI_Ecto_notifications` | Upforgrabs | Alerts and messages for events/updates |
-| **Voice** | `MetaAI_Ecto_voice` | Upforgrabs | Voice commands and dictation |
-| **Auth (Auth.meta.com)** | `c50-access-Ecto` | Upforgrabs | Authentication system for user verification |
-| **Accessibility** | `MetaAI_Ecto_accessibility` | Upforgrabs | Features for users with disabilities |
-| **Settings** | `MetaAI_Ecto_settings` | Upforgrabs | User preferences and customization |
-| **Something Went Wrong** | `MetaAI_Ecto_something_went_wrong` | Upforgrabs | "Something went wrong" error messages |
-| **Private Link Sharing** | `MetaAI_Ecto_private_link_sharing` | Upforgrabs | Sharing private links with non-public content |
-| **Conversation Starters** | `MetaAI_Ecto_coversation_starters` | Upforgrabs | Prompt suggestions on homepage |
-| **Latency** | `MetaAI2.0-Latency` | Upforgrabs | Response delay issues |
-| **Projects** | `MetaAI2.0-Projects`, `MetaAI_Ecto_Projects` | metaai_project_developers | Group related chats, files, custom instructions |
-| **History** | `MetaAI_Ecto_Conversation_History` | Upforgrabs | Sidebar for previous conversations, pinning |
-| **Other** | `MetaAI_Ecto_other` | Upforgrabs | Issues not fitting other categories |
+| **Immersive Feed** | `MetaAI_Ecto_immersivefeed` | Upforgrabs | Issues arising from the new revamped Feed showing video only posts |
+| **Video Controls** | `MetaAI_Ecto_videocontrols` | Upforgrabs | Issues when users try to like, limit/allow all comments, share, remix videos of the feed |
+| **Assistant UI (Minus Feed)** | `MetaAI_Ecto_AssistantUI` | Upforgrabs | Issues related to the user interface of the Assistant feature, excluding the feed component |
+| **Profile** | `MetaAI_Ecto_Profile` | Upforgrabs | Problems with the profile section, including issues with editing or viewing personal information |
+| **Video Public Post Lightbox** | `MetaAI_Ecto_videoLightbox` | Upforgrabs | Bugs or usability issues with the video public post lightbox feature |
+| **Video Comments** | `MetaAI_Ecto_videocomments` | Upforgrabs | Issues with leaving, viewing or sorting comments on video posts |
+| **Post Video to Feed** | `MetaAI_Ecto_postVideotofeed` | Upforgrabs | Problems with sharing videos directly to the user's feed |
+| **Navigation** | `MetaAI_Ecto_navigation` | Upforgrabs | Issues with the overall navigation system, including problems with menus, buttons, or other interactive elements |
+| **Login** | `MetaAI_Ecto_login` | Upforgrabs | Problems with logging into the platform, including issues with credentials or authentication |
+| **Logged-Out Flow** | `MetaAI_Ecto_loggedoutflow` | Upforgrabs | Issues with using the platform while logged out, including limitations or restrictions |
+| **Composer** | `MetaAI_Ecto_composer` | Upforgrabs | Bugs or usability issues with the composer tool, including problems with creating new content |
+| **Notifications** | `MetaAI_Ecto_notifications` | Upforgrabs | Issues with alerts or messages that inform users of important events or updates within the platform |
+| **Voice** | `MetaAI_Ecto_voice` | Upforgrabs | Problems with using voice commands or dictation to interact with the platform |
+| **Auth (Auth.meta.com)** | `c50-access-Ecto` | Upforgrabs | Issues with the authentication system used to verify user identities and grant access to the platform |
+| **Accessibility** | `MetaAI_Ecto_accessibility` | Upforgrabs | Problems with features or settings designed to make the platform more usable for people with disabilities |
+| **Settings** | `MetaAI_Ecto_settings` | Upforgrabs | Issues with options or preferences that allow users to customize their experience on the platform |
+| **Personalized Proactive Feed** | `MetaAI_Ecto_personalizedfeed` | Upforgrabs | Issues relating to the users personalized proactive feed |
+| **Something Went Wrong** | `MetaAI_Ecto_something_went_wrong` | Upforgrabs | When the user experiences the "Something went wrong" error message |
+| **Private Link Sharing** | `MetaAI_Ecto_private_link_sharing` | Upforgrabs | Sharing private links from Ecto that could contain non-public media, conversations |
+| **Conversation Starters** | `MetaAI_Ecto_conversation_starters` | Upforgrabs | Prompt suggestions displayed on the Meta AI homepage that help users quickly engage with the AI assistant |
+| **Latency** | `MetaAI2.0-Latency` | Upforgrabs | The delay between when a user submits a prompt and when the response (text or media) begins to appear on their screen, with high latency negatively impacting user experience |
+| **Projects** | `MetaAI2.0-Projects`, `MetaAI_Ecto_Projects` | metaai_project_developers | Projects lets you group related chats, files, and custom instructions in one place. Whether you're managing ongoing work like tracking health results or planning a trip, Projects keeps everything tidy and easily accessible |
+| **History** | `MetaAI_Ecto_Conversation_History` | Upforgrabs | The sidebar is where users can revisit their previous exchanges with Meta AI, pin important conversations, etc |
+| **Other** | `MetaAI_Ecto_other` | Upforgrabs | A catch-all category for issues that don't fit into any of the above categories |
 
-> **Additional Tag**: All features should also include `ProdOps - Drop Rate Exempt`
+> **Additional Note**: For all Meta.ai tasks, the mention of "Build" in the Task template should be removed before completing triage.
 
 ### Key Contacts Quick Reference
 
@@ -215,9 +219,13 @@ Use the Feature Routing Matrix above to identify which feature is affected.
 [Ecto][Feature] Summary of the issue
 ```
 
-Example:
+> **Note**: No need to include Build information for Ecto tasks.
+
+Examples:
 ```
 [Ecto][Voice] Voice input not responding after first prompt
+[Ecto][Immersive Feed] Videos not loading in feed
+[Ecto][Projects] Cannot create new project folder
 ```
 
 ### Step 4: Complete Triage via UDT
@@ -492,5 +500,9 @@ The fix is now live. Please verify the issue is resolved on your end.
 
 ---
 
-*Last updated: March 2026*
+*Last updated: Dec 10, 2025*
 *Document POC: Sargam Tahiliani*
+
+---
+
+*This guide is part of the Meta AI Triage System.*

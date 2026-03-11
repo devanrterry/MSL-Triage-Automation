@@ -1,167 +1,135 @@
-# Personalization Bug Triage Operations Guide
+# Personalization Triage Guide
 
-> **Your mission**: Efficiently triage bugs related to personalization features across all Meta AI surfaces.
-
----
-
-## Quick Reference
-
-| Resource | Link/Command | Purpose |
-|----------|-------------|---------|
-| **Meta AI App** | iOS App Store / Google Play | Repro environment (C50) |
-| **Meta.ai** | [meta.ai](https://meta.ai) | Repro environment (Ecto) |
-| **FoA Apps** | FB, IG, WA, MSGR | Repro environment (FoA) |
-| **UDT Flow** | [UDT Form](https://www.internalfb.com/butterfly/form/749148824511801) | Automated triage routing |
+> **Feature**: Meta AI Personalization
+> **Last Updated**: Jan 30, 2026
+> **Document POC**: Henry Ngo | Mark Nettles
+> **Audience**: Triage Specialists
 
 ---
 
-## Product Overview
+## Overview
 
-**Personalization** refers to features that tailor the Meta AI experience to individual user preferences, history, and behavior.
+This document covers triage processes for issues related to the quality of Meta AI's Personalization Feature (i.e. if the user reports issues with how Meta AI personalization responds to a user prompt).
 
-### Applicable Surfaces
+The **Model Quality Task Template** should be used for all these issues. Within the template, please include:
+- Pariscope link
+- Bot Request ID
+
+---
+
+## Applicable Surfaces
 
 | Surface | Platform | Description |
 |---------|----------|-------------|
-| **C50** | iOS, Android | Personalization in Meta AI App |
-| **Ecto** | Web | Personalization on meta.ai |
-| **FoA** | FB, IG, WA, MSGR | Personalization in Family of Apps |
+| **C50** | iOS, Android | Meta AI App |
+| **Ecto** | Web | meta.ai website |
+| **FoA** | FB, IG, WA, MSGR | Family of Apps |
 
 ---
 
-## Feature Categories
+## Bug Triage Process
 
-### Personalization Feature Matrix
+### Step 1: Initial Identification & Triage
 
-| Feature | Tag | Owner | Description |
-|---------|-----|-------|-------------|
-| **User Preferences** | `MetaAI_Personalization_Prefs` | Personalization Oncall | User preference settings |
-| **Memory** | `MetaAI_Personalization_Memory` | Personalization Oncall | AI remembering user context |
-| **Recommendations** | `MetaAI_Personalization_Recs` | Personalization Oncall | Personalized recommendations |
-| **Conversation Context** | `MetaAI_Personalization_Context` | Personalization Oncall | Context-aware responses |
-| **VIF (Virtual Identity Framework)** | `meta_ai_customization` | ai_studio_creation_mobile | Virtual identity features |
-| **Other** | `MetaAI_Personalization_Other` | Personalization Oncall | Issues not fitting other categories |
+1. **Identify Surface**: Meta AI App, meta.ai website, or FoA
+2. **Task Title Template**: Select "Personalization" from "[GenAI] Title Template" butterfly button
 
-### Key Contacts
+**Task Title Format:**
+```
+[MetaAI][P13n][Platform][App/Website][App Version] Summary of the issue
+```
+> Note: Remove `[App Version]` if reported on Ecto
 
-| Name | Role | Area |
-|------|------|------|
-| **TBD** | POM | Personalization Triage Guide |
-| **TBD** | Personalization Lead | Personalization Features |
+3. **KP Search**: Do NOT conduct full KP search. ONLY merge issues with EXACT SAME prompt and response
+4. **Repro Attempt**: Do NOT try to repro model quality issues (use "Skip" option in UDT)
+
+---
+
+### Step 2: Identify Type of Personalization Product
+
+| Type | Explanation | Tags | Oncall |
+|------|-------------|------|--------|
+| **2.1 Personalization (p13n)** | Surface level signals - tailoring content based on explicit/implicit signals (likes, clicks, searches, demographics, recent activity). P13n matches content to user profiles for relevance. | `MetaAI_P13n_Social-Recall`, `meta_ai_p13n` | See sub-issues |
+| **2.2 Theory of Mind Model (ToMM)** | Next-gen personalization engine. Deep, continuously-updated understanding of each user—who they are, what they care about, preferences—by synthesizing signals across Meta apps. Enables truly personal, natural, contextually relevant responses. | `MetaAI2.0-TOMM` | Mahsan Rofouei |
+| **2.3 (Unified) Memory & 1P Signal** | **Memory**: Stores essential facts and preferences. **1P Signals**: Real-time data (recent activity, interactions, context). Together they provide relevant, timely, personalized responses. | `MetaAI_P13n_1P` | meta_ai_personalization |
+| **2.4 Calendar/Email Integration (3P)** | Users link Google/Outlook calendar and email to Meta AI for personalized, context-aware responses. Retrieve/summarize events, emails, tailor recommendations. | `MetaAI2.0-EmailCalendar`, `MetaAI_P13n_3P` | meta_ai_extensions |
+| **2.5 Proactive Cards** | Proactive Cards 2.0 delivers personalized daily cards anticipating user needs. Refreshed daily in "For you" tab (C50) and FB app. Tailored using activity, interests, social signals. | `Proactivecard2.0` | See sub-issues |
+
+### Key Difference: P13n vs ToMM
+
+| Model | Key Distinctions | Example |
+|-------|------------------|---------|
+| **Personalization (p13n)** | Surface level signals (interests, recent activity). Reactive, sometimes shallow. Personalizes based on what you've done recently. | "What should I do this weekend?" → "There's a tennis match nearby, since you've liked tennis posts recently." |
+| **Theory of Mind Model (ToMM)** | Deep, holistic understanding including goals, context, history across Meta platforms. Infers motivations, emotional state. Proactive, emotionally intelligent. | "What should I do this weekend?" → "Last week you mentioned feeling stressed about your presentation. Maybe quiet time or a walk would help. Also, there's a photography workshop nearby since you've been interested in that." |
+
+---
+
+### Step 3: Identify Sub-Issues
+
+#### Personalization (p13n) Sub-Issues
+
+| # | Issue Type | Explanation | Tags | Oncall |
+|---|------------|-------------|------|--------|
+| 3.1 | **Social Retrieval** | Failure to correctly access, identify, or retrieve relevant user social data. Examples: No results for valid queries, missed tagged content, incorrect context returned, missing friends/locations | `Meta_P13n_retrieval`, `MetaAI_System` | Adam Radziwonczyk-Syta |
+| 3.2 | **Response Quality** | Flaws in AI-generated responses when synthesizing p13n content. Examples: Hallucinated personalization, incorrect group content, incomplete recall, omission of details, inappropriate tone | `Meta_P13n_response-quality`, `MetaAI_System` | Xiaochen Wang |
+| 3.3 | **UX** | UI rendering or behavior bugs impacting social recall. Examples: UI elements not loading, missing action buttons, thumbnail problems, broken icons, layout issues | `Meta_P13n_UX`, `MetaAI_System` | Matthew Ouellette |
+| 3.4 | **Rendering/UI on iOS** | iOS-specific crashes, display issues, or technical failures | `Meta_P13n_iOS-UI`, `MetaAI_System` | Nicholas-Dante Bellisario |
+| 3.5 | **Rendering/UI on Android** | Android-specific crashes, display issues, or technical failures | `Meta_P13n_Android-UI`, `MetaAI_System` | Nygel Kyle Lopez |
+| 3.6 | **Other/General** | Product feedback, policy questions, design suggestions, privacy concerns. Examples: Irrelevant recommendations, over-personalization, missed opportunities, policy questions | `Meta_P13n_Other`, `MetaAI_System` | meta_ai_personalization |
+
+#### Theory of Mind Model (ToMM) Sub-Issues
+
+| # | Issue Type | Explanation | Tags | Oncall |
+|---|------------|-------------|------|--------|
+| 3.7 | **ToMM Issues** | **Over-personalization**: Too much personal context, irrelevant personal tidbits. **Unnatural communication**: Forced, robotic, "in your face" presentation. **Generic responses**: Ignores available context. **Incorrect context**: Misinterprets signals, applies wrong/outdated information | `MetaAI2.0-TOMM` | Mahsan Rofouei |
+
+#### (Unified) Memory & 1P Signals Sub-Issues
+
+| # | Issue Type | Explanation | Tags | Oncall |
+|---|------------|-------------|------|--------|
+| 3.8 | **Extraction** | Identifying and importing memories from source apps. Examples: No memories extracted, partial extraction, missing app integrations, unrecognized source data | `Meta_P13n_unified_memory-extraction`, `MetaAI_System` | Quentin Chalvon Demersay |
+| 3.9 | **Retrieval** | Surfacing, merging, filtering, ranking, presenting stored memories. Examples: Irrelevant memories surfaced, failure to present correct memories, incorrect ranking, filtering errors, cross-app merging problems | `Meta_P13n_unified_memory-retrieval`, `MetaAI_System` | Xiange Zhang |
+| 3.10 | **Conflicting Memories/Duplicates** | Duplicate memories or contradictory information. Examples: Exact duplicates, contradictory information, multiple versions with variations, conflicting event details, failure to merge/deduplicate | `Meta_P13n_unified_memory-duplicates`, `MetaAI_System` | Patrick Liu |
+| 3.11 | **Latency** | System performing slower than expected. Examples: Slow memory queries, high response times on specific surfaces, inconsistent performance, timeouts, performance degradation during peak usage | `Meta_P13n_latency` | meta_ai_personalization |
+| 3.12 | **General/Other** | Unclassified issues, edge cases, feature feedback, privacy concerns, integration challenges | `Meta_P13n_Genother`, `MetaAI_System` | meta_ai_personalization |
+
+#### Calendar/Email Integration Sub-Issues
+
+| # | Issue Type | Explanation | Tags | Oncall |
+|---|------------|-------------|------|--------|
+| 3.13 | **Email/Calendar** | Account linking issues, permission/access errors, data retrieval & sync failures, timezone/formatting errors, action failures (create/update/delete), incomplete flows, privacy/security risks, backend/API outages, widget/UI failures | `MetaAI2.0-EmailCalendar` | meta_ai_extensions |
+
+#### Proactive Cards Sub-Issues
+
+| # | Issue Type | Explanation | Tags | Oncall |
+|---|------------|-------------|------|--------|
+| 3.14 | **Card Contents** | Content and context of individual cards. Examples: Irrelevant topics, stale content, lack of personalization, repetitive information | `proactive2.0_card_contents` | Steven Li |
+| 3.15 | **Images** | Images on cards and in articles. Examples: Incorrect/low-quality images, images not matching topic, visual clarity issues | `proactive2.0_images` | Eric Filkins |
+| 3.16 | **Facebook QP** | Quick Promotions on Facebook. Examples: QP not appearing, incorrect content, broken links, UI glitches | `proactive2.0_facebook_qp` | Gong Tang |
+| 3.17 | **Instagram QP** | Quick Promotions on Instagram. Examples: QP not appearing, incorrect content, broken links, UI glitches | `proactive2.0_instagram_qp` | Sam Zhang |
+| 3.18 | **Client side Android** | Android platform-specific issues. Examples: App crashes, rendering problems, performance issues, UI bugs | `proactive2.0_clientside_android` | Martin Purita |
+| 3.19 | **Client side iOS** | iOS platform-specific issues. Examples: App crashes, rendering problems, performance issues, UI bugs | `proactive2.0_clientside_ios` | Lexy Li |
+| 3.20 | **Other/General** | Catch-all for issues not in above categories. Examples: General feedback, cross-platform issues, integration problems | `proactive2.0_other` | Wenting Li (subscribe Yuliya Kaleda) |
+
+---
+
+### Step 4: Complete Triage
+
+1. **Tag** - Apply appropriate tags from tables above
+2. **Prioritize** - Use schema below
+3. **Assign Owner** - Route to oncall from tables above
+4. **KP Merge** - Only merge if EXACT SAME prompt and response
 
 ---
 
 ## Priority Definitions
 
-| Priority | Criteria | Examples |
-|----------|----------|----------|
-| **High** | Personalization completely broken. Memory not working. Privacy concerns with stored data. | Memory fails to save, preferences not applied, privacy leaks |
-| **Medium** | Personalization works but with issues. Recommendations not accurate. | Partial memory, inconsistent preferences |
-| **Low** | Minor issues with workarounds. Quality improvements. | Minor recommendation issues |
-| **Wishlist** | Feature requests and suggestions. | New personalization capabilities |
-
----
-
-## Triage Decision Tree
-
-```
-START: Personalization-related bug received
-         │
-         ├─── Is it a PRIVACY/SECURITY issue?
-         │    └── YES → Escalate to Privacy team immediately
-         │
-         ├─── Is it a MODEL QUALITY issue?
-         │    └── YES → Text Model Quality Guide
-         │
-         ├─── Identify the SURFACE:
-         │    ├── Meta AI App → Use C50 title format
-         │    ├── meta.ai → Use Ecto title format
-         │    └── FB/IG/WA/MSGR → Use FoA title format
-         │
-         ├─── Identify the PERSONALIZATION FEATURE:
-         │    ├── User Preferences → MetaAI_Personalization_Prefs
-         │    ├── Memory → MetaAI_Personalization_Memory
-         │    ├── Recommendations → MetaAI_Personalization_Recs
-         │    ├── Context → MetaAI_Personalization_Context
-         │    └── VIF → meta_ai_customization
-         │
-         ├─── Can you reproduce?
-         │    ├── YES → Document repro steps
-         │    └── NO → Mark as "Does Not Repro"
-         │
-         └─── Complete triage via UDT
-              └── Tag, prioritize, assign owner
-```
-
----
-
-## Practical Triage Workflow
-
-### Step 1: Initial Identification
-
-1. **Check for Privacy/Security Issues**
-   - If user data is being exposed inappropriately → Escalate immediately
-   - If memory is showing other users' data → High priority privacy issue
-
-2. **Check if Model Quality Issue**
-   - If the issue is about AI response quality → Text Model Quality Guide
-   - If the issue is about personalization features → Continue with this guide
-
-### Step 2: Repro Attempt
-
-- [ ] Which surface and platform?
-- [ ] Which personalization feature is affected?
-- [ ] Does it require user account/history?
-- [ ] Can you reproduce the issue?
-- [ ] What are the exact steps?
-
-### Step 3: Identify the Feature
-
-**Task Title Format:**
-
-For C50:
-```
-[c50][Personalization][Platform][App Version] Summary of the issue
-```
-
-For Ecto:
-```
-[Ecto][Personalization] Summary of the issue
-```
-
-For FoA:
-```
-[App][Platform][Personalization][App Version] Summary of the issue
-```
-
-### Step 4: Complete Triage via UDT
-
-1. **Tag** - Apply `MetaAI_Personalization` + specific feature tag
-2. **Prioritize** - Use priority schema (Privacy issues = High)
-3. **Assign Owner** - Route to Personalization oncall
-
----
-
-## Privacy Considerations
-
-### When to Escalate
-
-- User reports seeing another user's data
-- Memory contains sensitive information being exposed
-- Personalization data being shared inappropriately
-- Any potential data breach or privacy violation
-
-### Privacy-Related Tags
-- Mark privacy issues with appropriate priority (High)
-- Follow sensitive content processes as needed
-
----
-
-## KP Merge Rules
-
-- Only merge if the personalization issue is **exactly the same**
-- User-specific issues should NOT be merged unless systemic
-- Privacy issues should NOT be merged - each requires individual attention
+| Priority | Product Bugs - Functionality / Usability | Model and System Bugs |
+|----------|------------------------------------------|----------------------|
+| **High** | Experience completely broken. User cannot complete flow/chat. Significantly degraded core feature. Reliability/Infrastructure issues. Logging/Access issues. UI/UX bugs impacting retention/engagement. Has reproducibility indication. | Stops user from achieving goal. Poses significant risk to user safety. Severe negative impact on brand reputation. |
+| **Medium** | Flow inconvenient but not blocked. UI/UX optimizations. Accessibility. Blocking but cannot repro with no multiple reports. | Interrupts user's flow but doesn't stop them. Negatively impacts user perception. May have slight brand reputation impact. |
+| **Low** | Bugs with temporary workaround not impacting goals. Polish and improvements. | Inconvenience that can be worked around. Some impact on user perception. Doesn't pose serious risk. |
+| **Wishlist** | Feedback not immediately actionable. Ideas for next iteration. | Nice to have improvements. |
 
 ---
 
@@ -174,8 +142,14 @@ For FoA:
 | **Ecto Guide** | Meta AI Website UI/UX issues |
 | **FoA Guide** | Family of Apps UI/UX issues |
 | **Characters Guide** | Character personalization issues |
+| **Search Guide** | Search-related issues |
+| **Media Generation Guide** | Media generation issues |
 
 ---
 
-*Last updated: March 2026*
-*Document POM: TBD*
+*Last updated: Jan 30, 2026*
+*Document POC: Henry Ngo | Mark Nettles*
+
+---
+
+*This guide is part of the Meta AI Triage System.*

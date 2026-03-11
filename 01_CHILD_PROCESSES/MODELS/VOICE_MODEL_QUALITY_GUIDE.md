@@ -1,349 +1,224 @@
 # Voice Model Quality Triage Guide
 
+> **Document POMs**: Chelsea Zeng
 > **Product Area**: Voice Model Quality
-> **Last Updated**: March 2026
-> **Child Process Owner**: Meta AI Voice Team
+> **Last Updated**: January 7, 2026
 
 ---
 
 ## Overview
 
-Voice Model Quality covers issues related to Meta AI's voice/audio capabilities, including speech-to-text (STT), text-to-speech (TTS), voice recognition, audio quality, and real-time voice interactions. This guide addresses both input (user voice) and output (AI voice) quality issues.
+This document covers the triage processes for issues related to the quality of Meta AI's voice responses (i.e., if the user reports an issue with how Meta AI responds to a user prompt).
 
 ---
 
-## Scope Definition
+## Model vs Product Issue
 
-### In Scope
-- Text-to-Speech (TTS) quality issues
-- Speech-to-Text (STT) transcription errors
-- Voice recognition failures
-- Audio quality (distortion, latency, artifacts)
-- Voice persona/character voice issues
-- Pronunciation errors
-- Voice command failures
-- Real-time voice conversation issues
-- Audio streaming problems
-- Voice-specific language support
+### Is this a Model Quality Issue?
 
-### Out of Scope
-- Text response quality (→ Text Model Quality)
-- Media audio generation like music (→ Media Generation)
-- UI audio playback bugs (→ Surface guides)
-- Microphone hardware issues (→ Device support)
-- Non-voice audio in videos (→ Media Generation)
+| Answer | Description | Template |
+|--------|-------------|----------|
+| **Yes - Text** | Relates to text model quality (AI's text response) | Model Quality Template |
+| **Yes - Voice** | Relates to voice model quality (AI's audio quality in voice response) | Model Quality Template |
+| **No** | Does not relate to model quality | Route to appropriate surface guide |
 
 ---
 
-## Voice Components
+## Surfaces Covered
 
-### 1. Speech-to-Text (STT) - User Voice Input
-
-| Issue Type | Description | Priority |
-|------------|-------------|----------|
-| Transcription Errors | Incorrect text from speech | Medium-High |
-| Language Detection | Wrong language detected | Medium |
-| Accent Recognition | Poor handling of accents | Medium |
-| Background Noise | Fails with ambient noise | Medium |
-| Partial Transcription | Cuts off or misses words | High |
-| Latency | Slow transcription speed | Medium |
-
-### 2. Text-to-Speech (TTS) - AI Voice Output
-
-| Issue Type | Description | Priority |
-|------------|-------------|----------|
-| Robotic/Unnatural | Voice sounds artificial | Medium |
-| Pronunciation | Mispronounces words/names | Medium |
-| Prosody Issues | Wrong emphasis/intonation | Low |
-| Audio Artifacts | Clicks, pops, distortion | High |
-| Voice Consistency | Voice changes unexpectedly | Medium |
-| Speed Issues | Too fast or too slow | Low |
-| Volume Problems | Too quiet or too loud | Low |
-
-### 3. Voice Interaction
-
-| Issue Type | Description | Priority |
-|------------|-------------|----------|
-| Wake Word Failure | "Hey Meta" not recognized | High |
-| Command Recognition | Voice commands not understood | High |
-| Turn-Taking | Interrupts or doesn't respond | Medium |
-| Conversation Flow | Unnatural conversation pacing | Medium |
-| End Detection | Doesn't know when user finished | Medium |
+Voice Model Quality issues can be found in the following surfaces:
+- **Meta AI App (C50)**
+- **meta.ai website (Ecto)**
+- **FoA** - Facebook, Instagram, Messenger, WhatsApp, etc.
 
 ---
 
-## Tags & Routing
+## Voice Issue Types
 
-| Category | Tag | Owner/Oncall |
-|----------|-----|--------------|
-| STT Issues | `metaai_voice_stt` | meta_ai_voice_backend |
-| TTS Issues | `metaai_voice_tts` | meta_ai_voice_backend |
-| Voice Commands | `metaai_voice_commands` | meta_ai_voice_backend |
-| Audio Quality | `metaai_voice_audio_quality` | meta_ai_voice_backend |
-| Voice Personas | `metaai_voice_personas` | meta_ai_voice_backend |
-| Latency | `metaai_voice_latency` | meta_ai_voice_backend |
-| Voice I18n | `metaai_voice_i18n` | metaai_i18n_oncall |
-| Hands-Free | `metaai_voice_handsfree` | meta_ai_voice_backend |
+This guide covers the following types of voice model issues:
+- Audio Quality
+- Response Quality
+- Content Quality
+- Voice Expressivity, Steerability, Tone Quality
+- Search / Tool Use
+- Safety
 
 ---
 
-## Triage Process
+## Bug Triage Process
 
-### Step 1: Identify Voice Component
+### Step 1: Initial Identification & Triage
 
-Determine which component is affected:
+1. **Identify Surface**: Determine the surface the issue was reported on (Meta AI App, meta.ai website, or FoA)
 
-| User Report | Component |
-|-------------|-----------|
-| "It didn't understand what I said" | STT |
-| "The AI voice sounds weird" | TTS |
-| "Hey Meta isn't working" | Voice Interaction |
-| "Audio is choppy/distorted" | Audio Quality |
-| "The voice persona sounds different" | Voice Personas |
+2. **Identify Issue Type**: An issue is a voice quality issue if the user is reporting an issue with:
+   - **Audio quality** (static, glitches, pops, etc.)
+   - **Content of the response** Meta AI provided
 
-### Step 2: Categorize Issue Type
+3. **Voice Tags**: All voice bugs will have the following tags:
+   | Tag Type | Tag |
+   |----------|-----|
+   | All Voice Bugs | `MetaAI_Voice` |
+   | Audio Bug | `MetaAI_Audio` |
+   | Model Bug | `MetaAI_Model` |
 
-| Symptoms | Category | Priority Guidance |
-|----------|----------|-------------------|
-| Complete failure to transcribe | STT - Critical | High |
-| Occasional misheard words | STT - Minor | Medium |
-| Voice output not playing | TTS - Critical | High |
-| Voice sounds robotic | TTS - Quality | Medium |
-| Wake word never works | Interaction - Critical | High |
-| Latency > 3s | Latency | High |
+   > **Note**: These tags are added by the TS in Steps 2-3
 
-### Step 3: Apply Tags
+4. **KP Search**: TS should **NOT** conduct a full KP search for model quality tasks. They should **ONLY** merge issues that have the **EXACT SAME prompt, response, and reporter**. Otherwise, each task is to be triaged individually. Do NOT attempt KP search for Response Quality and Response Audio issues—they should be triaged separately. Do NOT merge voice modality tasks with text modality tasks—they should be triaged separately.
 
-**Task Title Format:**
+5. **Repro Attempt**: TS should **NOT** try to repro model quality issues (use "Skip" option in UDT)
+
+6. **Task Template**: Input the Model Quality task template and fill out the requested details
+
+### Task Title Format
+
 ```
-[Meta AI][Voice][Component][Surface][Platform]
+[feature][Voice][App/Website][Platform] Summary of the issue
 ```
 
-**Example Titles:**
-- `[Meta AI][Voice][STT][C50][iOS] Transcription fails with accent`
-- `[Meta AI][Voice][TTS][Ecto] Voice output has audio artifacts`
-- `[Meta AI][Voice][Commands][FoA][Android] Hey Meta not recognized`
+- **Feature (based on model type)**: Gemini, Paricado, YonderTTS, Feed AI, Characters
+- **App/Website**: C50, Ecto, FB, MSGR, IG, WA, etc.
+- **Platform**: Android, iOS, Web
+
+**Examples:**
+- `[YonderTTS][Voice][C50][iOS] Voice sounds robotic during response`
+- `[Gemini][Voice][Ecto][Web] ASR misunderstands user with accent`
+- `[Feed AI][Voice][FB][Android] Context extraction fails on Reels`
 
 ---
 
-## Priority Definitions
+## Step 2: Identify the Voice Model
 
-| Priority | Criteria | Response Time |
-|----------|----------|---------------|
-| **Critical** | Voice completely non-functional, widespread outage | Immediate |
-| **High** | Consistent STT/TTS failures, >3s latency, wake word failures | < 4 hours |
-| **Medium** | Occasional quality issues, specific language/accent problems | < 24 hours |
-| **Low** | Minor quality issues, pronunciation edge cases | < 1 week |
-| **Wishlist** | Voice quality improvements, new language requests | Backlog |
+### Using CallDive and Pariscope
 
----
+1. **Bunnylol CallDive**: Search for the reporter's name → Look at the timestamp of when the bug was reported → Click on the closest call identifier link to copy
 
-## Investigation Playbooks
+2. **Pariscope for Voice** (MUST bunnylol `vdbg`): Clear the preset filter → Search for session ID → Drop in the copied link into the value section → Add filter
 
-### STT Transcription Errors
-```
-SYMPTOMS:
-- User's speech not correctly transcribed
-- Words misheard or missing
-- Transcription incomplete
+3. Click into the session and under "response model" you will find which voice model was used
 
-INVESTIGATION:
-1. Collect audio sample if possible
-2. Document exact words spoken vs transcribed
-3. Note environmental conditions (noise, distance)
-4. Check user's language/locale settings
-5. Test with clear speech in quiet environment
+### Voice Models
 
-COLLECT:
-- Audio sample or detailed description
-- Spoken words vs transcribed text
-- Device type and OS version
-- Surface (C50/Ecto/FoA)
-- User language settings
-- Environmental conditions
-
-TAGS: metaai_voice_stt
-OWNER: meta_ai_voice_backend
-```
-
-### TTS Audio Quality Issues
-```
-SYMPTOMS:
-- Voice sounds robotic/unnatural
-- Audio artifacts (clicks, pops)
-- Distortion or clipping
-- Inconsistent volume
-
-INVESTIGATION:
-1. Reproduce on same text
-2. Test with different text lengths
-3. Check device audio settings
-4. Note specific problematic words/phrases
-5. Test on different devices if possible
-
-COLLECT:
-- Text that produces issue
-- Audio recording if possible
-- Device and OS version
-- Surface and app version
-- Headphones/speaker used
-- Voice persona selected
-
-TAGS: metaai_voice_audio_quality, metaai_voice_tts
-OWNER: meta_ai_voice_backend
-```
-
-### Wake Word / Voice Command Failures
-```
-SYMPTOMS:
-- "Hey Meta" not recognized
-- Voice commands ignored
-- Delayed or no response to voice
-
-INVESTIGATION:
-1. Verify microphone permissions
-2. Test in quiet environment
-3. Check for competing audio
-4. Verify voice features enabled
-5. Test with different phrasings
-
-COLLECT:
-- Exact phrase used
-- Number of attempts
-- Environmental noise level
-- Device and OS version
-- Microphone permissions status
-- Other apps using microphone
-
-TAGS: metaai_voice_commands, metaai_voice_handsfree
-OWNER: meta_ai_voice_backend
-```
-
-### Voice Latency Issues
-```
-SYMPTOMS:
-- Long delay before voice response
-- Transcription appears slowly
-- Conversation feels sluggish
-
-INVESTIGATION:
-1. Measure actual latency (time from speech end to response start)
-2. Check network conditions
-3. Compare across surfaces
-4. Test at different times of day
-
-COLLECT:
-- Measured latency (seconds)
-- Network type (WiFi/cellular/strength)
-- Device and OS version
-- Surface and app version
-- Time of day/location
-- Prompt complexity
-
-TAGS: metaai_voice_latency
-OWNER: meta_ai_voice_backend
-```
+| Model | Details | Tag(s) Added | Oncall |
+|-------|---------|--------------|--------|
+| **YonderTTS (1.0 Voice)** | Named as: `yonder-17b-voice-latest`, `Llama4v-17b-voice_finetuned`. This is the old model. | `MetaAI_Voice`, `llama4_voice_yonder` | Dependent on issue; see below |
+| **MetaAI 2.0 Voice** | Two models: **Gemini** is the "Vertex_ai" model, **Paricado** is the alternative | `MetaAI2.0-Voice`, `Voice_gemini` OR `Voice_paricado` | Dependent on issue; see below |
+| **Feed AI (fka VIF)** | Only available on FB. Applicable to characters in feed. Technically a feature, using one of the 1.0 or 2.0 voice models as base. | `MetaAI_Voice`, `vif` | Dependent on issue; see below |
+| **Character Voice** | Reference AI Studio: character voice (in chat) | Use Character Voice flow | - |
 
 ---
 
-## Voice Personas
+## Step 3: Identify Type of Voice Quality Issue
 
-Meta AI supports different voice personas. Voice persona issues include:
+Triage will be asked (via UDT flow) to identify the most relevant type of voice model quality issue based on the model.
 
-| Issue | Description | Tag |
-|-------|-------------|-----|
-| Wrong Persona | Different voice than selected | `metaai_voice_personas` |
-| Persona Switching | Voice changes mid-conversation | `metaai_voice_personas` |
-| Persona Unavailable | Selected persona not working | `metaai_voice_personas` |
-| Persona Quality | Specific persona sounds bad | `metaai_voice_personas` |
+### YonderTTS / MetaAI 2.0 Voice Issues
 
----
+| Issue Type | Explanation | Tag(s) Added | Oncall |
+|------------|-------------|--------------|--------|
+| **ASR: Speech Recognition (input)** | Issues related to AI's ability to understand what the user is saying. Examples: Trouble understanding user with accent, misunderstood user's prompt | `tts_asr` | `speech_model_infra` |
+| **Response Quality (content)** | Issues related to the model's ability to generate quality responses. Includes language fluency, grammar, coherence, relevance, factual accuracy. Examples: Grammatically incorrect sentences, irrelevant responses, repetition, hallucinations, poor idiom handling, poor instruction following | `MetaAI_Model`, `meta_ai_response_quality_voice` | Shun Zhang |
+| **Response Audio Issues (output)** | Audio issues when producing voice output. Examples: Model silence, frequent interruptions/cut off, noise bursts, audio glitches | `MetaAI_Audio`, `tts_output_issues` | `speech_tts` |
+| **Expressivity** | Issues related to tone, emotions, naturalness of voice output. Examples: Sad topic but voice sounds happy, constant same tone regardless of topic, monotone, too formal/casual, inappropriate humor | `tts_expressivity` | Shun Zhang |
+| **Safety** | Issues with model generating harmful, biased, offensive content. Examples: Hate speech, harmful content, privacy violations, unsafe behaviors, false refusals | `MetaAI_Model`, `MetaAI_safety` | `meta_ai_voice_backend` |
+| **Personalization** | Issues related to Personalization, TOMM, etc. | `MetaAI_Model`, `voice_p13n` | Ref. Personalization Flow |
+| **I18n** | Issues related to translation/pronunciation/interpretation with voice using another language | `MetaAI_Model`, `tts_i18n` | `meta_ai_voice_backend` |
+| **Search / Tool Use** | Issues with triggering search | `MetaAI_search` | Ref. Search Flow |
 
-## Platform-Specific Considerations
+### Feed AI Issues
 
-### iOS (C50)
-- Check microphone permissions in Settings
-- Verify Siri is not intercepting voice
-- Test with different audio routes (speaker/headphones)
-
-### Android (C50)
-- Check microphone permissions
-- Verify Google Assistant not intercepting
-- Check battery optimization settings
-
-### Web (Ecto)
-- Browser microphone permissions
-- Check browser compatibility
-- Verify HTTPS (required for mic access)
-
-### FoA (FB/IG/WA/MSGR)
-- Check app-specific microphone permissions
-- In-app voice feature enablement
-- Voice note vs AI voice distinction
+| Issue Type | Explanation | Tag(s) Added | Oncall |
+|------------|-------------|--------------|--------|
+| **Context Extraction** | Issues related to AI's ability to extract proper content from the feed/post/reels | `vif_context_understanding` | `realtime_ai_vif` |
+| **Model Response Quality (content)** | All issues related to model's ability to generate quality responses. Includes language fluency, grammar, coherence, relevance, factual accuracy. Examples: Grammatically incorrect sentences, too formal/casual, inappropriate humor, irrelevant responses, repetition, hallucinations, poor idiom handling, poor instruction following | `MetaAI_Model`, `vif_response_quality` | Determined at sub-issue level below |
+| **False Refusals** | Issues with model incorrectly refusing to respond to a safe or appropriate user request | `vif_refusal` | `realtime_ai_vif` |
+| **Safety/Integrity** | Issues with model generating harmful, biased, offensive content. Examples: Hate speech, harmful content, privacy violations, unsafe behaviors, failing to refuse unsafe requests | `vif_safety` | `realtime_ai_vif` |
+| **Other** | Catch-all category for issues that don't fit above categories | N/A | `realtime_ai_vif` |
 
 ---
 
-## Data Collection Requirements
+## Step 4: Identify Sub-Issue
 
-| Data Point | Required | Description |
-|------------|----------|-------------|
-| Audio Sample | If possible | Recording demonstrating issue |
-| Spoken Text | Yes | What user said (for STT issues) |
-| Output Text | Yes | What AI said (for TTS issues) |
-| Expected vs Actual | Yes | What should have happened |
-| Device Info | Yes | Device model, OS version |
-| Surface | Yes | C50/Ecto/FoA |
-| App Version | Yes | Current app version |
-| Network Type | If latency | WiFi/cellular/signal strength |
-| Environment | If STT | Noise level, distance from mic |
-| Voice Persona | If TTS | Which persona selected |
+Triage will be asked (via UDT flow) to identify the most relevant sub-issue where applicable.
+
+### YonderTTS / 2.0 Voice: Response Quality Sub-Issues
+
+| Sub-Issue | Explanation | Tag(s) Added | Oncall |
+|-----------|-------------|--------------|--------|
+| **Factuality** | Model's ability to generate accurate, truthful information. Avoiding hallucinations and misinformation. Examples: Incorrect dates/names/statistics, inventing facts, misrepresenting information, confusing similar entities, providing outdated information | `meta_ai_text_factuality` | Shun Zhang |
+| **Instruction Following** | How well the model understands and executes user commands. Examples: Ignoring parts of instructions, performing different tasks, overly literal/broad interpretations, failing to adapt style, misunderstanding complex instructions | `meta_ai_text_instruction_following` | Shun Zhang |
+
+### YonderTTS / 2.0 Voice: Safety Sub-Issues
+
+| Sub-Issue | Explanation | Tag(s) Added | Oncall |
+|-----------|-------------|--------------|--------|
+| **Text Response Safety** | Avoiding harmful, offensive, or inappropriate content. Examples: Racist/sexist language, violent descriptions, offensive slurs, endorsing harmful behaviors, sharing misinformation | `meta_ai_text_safety_violation` | `meta_ai_voice_backend` |
+| **Safety False Refusal** | Model incorrectly refuses safe or appropriate requests. Examples: Refusing benign questions, declining safe factual information, rejecting harmless creative content, overblocking, generic refusals | `meta_ai_text_false_refusal` | `meta_ai_voice_backend` |
+
+### Feed AI: Response Quality Sub-Issues
+
+| Sub-Issue | Explanation | Tag(s) Added | Oncall |
+|-----------|-------------|--------------|--------|
+| **Factuality** | Model's ability to generate accurate, truthful information. Examples: Incorrect dates/names/statistics, inventing facts, misrepresenting information, confusing similar entities, outdated information | `vif_factuality` | `realtime_ai_vif` |
+| **Loss of Previous Context** | AI does not remember information or conversation history from previous context | `vif_loss_context` | `realtime_ai_vif` |
+| **Verbose** | Responses that are excessively long, detailed, or complex. Examples: Unnecessary background, excessive detail, repetitive information, continues elongated responses when asked to be concise | `vif_verbosity` | `realtime_ai_vif` |
+| **Other** | Catch-all category for issues that don't fit above categories | N/A | `realtime_ai_vif` |
 
 ---
 
-## TOT Considerations
+## Step 5: Complete Triage
 
-### Transfer TO Voice Model Quality
-- Audio playback issues that are model-related (not UI)
-- "AI didn't understand me" issues
-- Voice persona problems
+Triage will be expected to complete remaining triage steps (attempt repro, tag, prioritize, and assign owner). The above actions should be automated via submission of the UDT form.
 
-### Transfer FROM Voice Model Quality
-- **To Surface Guides**: If UI audio player is broken (not voice quality)
-- **To Text Quality**: If issue is response content (not audio)
-- **To Media Generation**: If issue is music/audio generation (not voice)
-- **To Device Support**: If issue is hardware microphone/speaker
+---
+
+## Issue Type Summary Tables
+
+### YonderTTS / 2.0 Voice Tags & Routing
+
+| Issue Type | Tag(s) | Oncall |
+|------------|--------|--------|
+| ASR: Speech Recognition | `tts_asr` | speech_model_infra |
+| Response Quality | `MetaAI_Model`, `meta_ai_response_quality_voice` | Shun Zhang |
+| Response Audio Issues | `MetaAI_Audio`, `tts_output_issues` | speech_tts |
+| Expressivity | `tts_expressivity` | Shun Zhang |
+| Safety | `MetaAI_Model`, `MetaAI_safety` | meta_ai_voice_backend |
+| Personalization | `MetaAI_Model`, `voice_p13n` | Personalization Flow |
+| I18n | `MetaAI_Model`, `tts_i18n` | meta_ai_voice_backend |
+| Search / Tool Use | `MetaAI_search` | Search Flow |
+
+### Feed AI Tags & Routing
+
+| Issue Type | Tag(s) | Oncall |
+|------------|--------|--------|
+| Context Extraction | `vif_context_understanding` | realtime_ai_vif |
+| Model Response Quality | `MetaAI_Model`, `vif_response_quality` | Sub-issue dependent |
+| False Refusals | `vif_refusal` | realtime_ai_vif |
+| Safety/Integrity | `vif_safety` | realtime_ai_vif |
+| Other | N/A | realtime_ai_vif |
 
 ---
 
 ## Key Contacts
 
-| Role | Workplace Handle |
-|------|------------------|
+| Role | Contact |
+|------|---------|
+| Document POM | Chelsea Zeng |
 | Voice Backend Oncall | @meta_ai_voice_backend |
-| I18n Oncall | @metaai_i18n_oncall |
-| Voice PM | TBD |
-| Voice Engineering Lead | TBD |
-
----
-
-## Metrics & Dashboards
-
-| Metric | Description | Dashboard |
-|--------|-------------|-----------|
-| STT Accuracy | Word error rate for transcription | Voice Quality Dashboard |
-| TTS Latency | Time to first audio byte | Voice Latency Dashboard |
-| Wake Word Success | % successful wake word activations | Voice Commands Dashboard |
-| Voice Session Success | % sessions completing without error | Voice Health Dashboard |
+| Speech Model Infra | @speech_model_infra |
+| Speech TTS | @speech_tts |
+| Feed AI/VIF | @realtime_ai_vif |
+| Response Quality | Shun Zhang |
 
 ---
 
 ## Resources
 
-- Voice Backend Documentation: [Internal Link]
-- Voice Quality Metrics: [Internal Link]
-- Supported Languages: [Internal Link]
-- Voice Team Workplace Group: [Workplace Group]
+- CallDive (bunnylol `calldive`): [Internal Link]
+- Pariscope for Voice (bunnylol `vdbg`): [Internal Link]
+- Model Quality Task Template: [Internal Link]
+- UDT Flow Documentation: [Internal Link]
 
 ---
 
-*This guide is part of the Meta AI Triage System. For surface-specific triage, see the respective surface guides (C50, Ecto, FoA).*
+*This guide is part of the Meta AI Triage System. For surface-specific triage, see the respective surface guides (C50, Ecto, FoA). For text model quality issues, see the Text Model Quality Guide.*
